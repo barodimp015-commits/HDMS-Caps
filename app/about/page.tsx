@@ -39,7 +39,7 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground leading-relaxed">
-                The Michigan State University Herbarium serves as a vital repository of botanical knowledge, preserving
+                The Mindanao State University Herbarium serves as a vital repository of botanical knowledge, preserving
                 plant specimens for scientific research, education, and conservation efforts. Our mission is to digitize
                 and make accessible one of the most comprehensive plant collections in the Great Lakes region.
               </p>
@@ -119,7 +119,7 @@ export default function AboutPage() {
               <div className="space-y-2">
                 <h4 className="font-semibold text-foreground">Educational Outreach</h4>
                 <p className="text-sm text-muted-foreground">
-                  Providing resources for students, educators, and the public to learn about Michigan flora.
+                  Providing resources for students, educators, and the public to learn about Mindanao flora.
                 </p>
               </div>
               <div className="space-y-2">
@@ -147,9 +147,9 @@ export default function AboutPage() {
                     <div>
                       <p className="font-medium">Address</p>
                       <p className="text-sm text-muted-foreground">
-                        Department of Plant Biology
+                        College of Forestry
                         <br />
-                        Michigan State University
+                        Mindanao State University
                         <br />
                         East Lansing, MI 48824
                       </p>

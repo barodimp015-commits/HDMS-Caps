@@ -19,6 +19,11 @@ export function VisitorNavbar() {
     { href: "/about", label: "About", icon: Info },
   ]
 
+  const handleLogin = () => {
+    console.log("[v0] Login button clicked")
+    setIsLoginModalOpen(true)
+  }
+
   return (
     <>
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -104,7 +109,7 @@ export function VisitorNavbar() {
         </div>
       </nav>
 
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <LoginModal open={isLoginModalOpen} onOpenChange={() => setIsLoginModalOpen(false)} />
     </>
   )
 }

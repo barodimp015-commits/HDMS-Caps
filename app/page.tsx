@@ -6,14 +6,21 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-provider"
 import { LoginModal } from "@/components/login-modal"
+import { RegisterModal } from "@/components/register-modal"
+
+
 import { Leaf, Search, MapPin, BarChart3, Users, Database } from "lucide-react"
 
 export default function LandingPage() {
   console.log("[v0] LandingPage component mounting")
 
   const router = useRouter()
-  const { user, enterGuestMode } = useAuth()
+  const { user } = useAuth()
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showRegisterModal, setshowRegisterModal] = useState(false)
+  
+
+
 
   console.log("[v0] User state:", user)
 
@@ -22,7 +29,6 @@ export default function LandingPage() {
       const roleRedirects = {
         admin: "/admin",
         researcher: "/researcher",
-        guest: "/visitor",
       }
       router.push(roleRedirects[user.role])
     }
@@ -34,8 +40,10 @@ export default function LandingPage() {
   }
 
   const handleExploreAsGuest = () => {
-    console.log("[v0] Explore as guest clicked")
-    enterGuestMode()
+    router.push("/visitor")
+  }
+    const handleRegister = () => {
+   setshowRegisterModal(true)
   }
 
   return (
@@ -67,8 +75,8 @@ export default function LandingPage() {
               </Button>
             ) : (
               <>
-                <Button onClick={handleExploreAsGuest} variant="outline">
-                  Explore as Guest
+                <Button onClick={handleRegister} variant="outline">
+                  Register
                 </Button>
                 <Button onClick={handleLogin} variant="default">
                   Login
@@ -96,17 +104,18 @@ export default function LandingPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button onClick={handleLogin} size="lg" className="text-lg px-8 py-6">
-              Login to System
-            </Button>
-            <Button
+              <Button
               onClick={handleExploreAsGuest}
               variant="outline"
               size="lg"
               className="text-lg px-8 py-6 bg-transparent"
             >
-              Explore as Guest
+              Get Started
             </Button>
+            <Button onClick={handleLogin} size="lg" className="text-lg px-8 py-6">
+              Login
+            </Button>
+          
           </div>
 
           {/* Quick Stats */}
@@ -164,7 +173,7 @@ export default function LandingPage() {
                 <MapPin className="h-10 w-10 text-secondary mb-4" />
                 <h3 className="text-xl font-bold font-sans mb-2">Interactive Maps</h3>
                 <p className="text-muted-foreground">
-                  Visualize specimen distribution across Michigan with interactive maps showing collection locations and
+                  Visualize specimen distribution across Mindanao with interactive maps showing collection locations and
                   habitat data.
                 </p>
               </CardContent>
@@ -222,7 +231,7 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-bold font-sans mb-8">About the MSU Herbarium Project</h2>
           <div className="prose prose-lg max-w-none text-muted-foreground space-y-6">
             <p className="text-lg leading-relaxed">
-              The Michigan State University Herbarium represents one of the most comprehensive collections of plant
+              The Mindanao State University Herbarium represents one of the most comprehensive collections of plant
               specimens in the Great Lakes region. Our digital management system transforms centuries of botanical
               knowledge into an accessible, searchable database for researchers, educators, and conservationists
               worldwide.
@@ -260,16 +269,16 @@ export default function LandingPage() {
             <div>
               <h3 className="font-bold font-sans mb-4">Contact Information</h3>
               <div className="space-y-2 text-muted-foreground">
-                <p>Michigan State University</p>
-                <p>Department of Plant Biology</p>
+                <p>Mindanao State University</p>
+                <p>College of Forestry</p>
                 <p>East Lansing, MI 48824</p>
-                <p>herbarium@msu.edu</p>
+                <p>herbarium@s.msumain.edu.ph</p>
               </div>
             </div>
 
             <div>
               <h3 className="font-bold font-sans mb-4">Quick Links</h3>
-              <div className="space-y-2">
+              <div className="flex items-start space-x-2 space-y-2 flex-col">
                 <Button variant="ghost" className="p-0 h-auto justify-start" onClick={handleExploreAsGuest}>
                   Browse Specimens
                 </Button>
@@ -277,19 +286,20 @@ export default function LandingPage() {
                   Researcher Login
                 </Button>
                 <Button variant="ghost" className="p-0 h-auto justify-start">
-                  About MSU
+                  About
                 </Button>
               </div>
             </div>
           </div>
 
           <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 Michigan State University. All rights reserved.</p>
+            <p>&copy; 2024 Mindanao State University. All rights reserved.</p>
           </div>
         </div>
       </footer>
 
       <LoginModal open={showLoginModal} onOpenChange={setShowLoginModal} />
+       <RegisterModal open={showRegisterModal}  onOpenChange={setshowRegisterModal} />
     </div>
   )
 }

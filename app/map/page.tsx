@@ -232,7 +232,7 @@ export default function MapPage() {
               <CardHeader>
                 <CardTitle className="text-lg font-space-grotesk flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
-                  Michigan Specimen Locations
+                  Mindanao Specimen Locations
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">

@@ -326,7 +326,7 @@ export default function DashboardPage() {
                       <div className="w-2 h-2 bg-secondary rounded-full mt-2"></div>
                       <div className="flex-1">
                         <p className="text-sm font-medium">Map explored</p>
-                        <p className="text-xs text-muted-foreground">Michigan locations - 1 hour ago</p>
+                        <p className="text-xs text-muted-foreground">Mindanao locations - 1 hour ago</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-3">

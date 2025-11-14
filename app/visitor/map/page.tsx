@@ -32,7 +32,7 @@ export default function VisitorMapPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">23</div>
-            <p className="text-xs text-muted-foreground">Michigan counties</p>
+            <p className="text-xs text-muted-foreground">Mindanao counties</p>
           </CardContent>
         </Card>
 
@@ -61,7 +61,7 @@ export default function VisitorMapPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Michigan Plant Distribution</CardTitle>
+          <CardTitle>Mindanao Plant Distribution</CardTitle>
           <CardDescription>Explore the geographic distribution of plant specimens across Michigan</CardDescription>
         </CardHeader>
         <CardContent>

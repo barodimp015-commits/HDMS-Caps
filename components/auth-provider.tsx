@@ -3,20 +3,19 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 
-export type UserRole = "admin" | "researcher" | "guest"
+export type UserRole = "admin" | "researcher" 
 
 export interface User {
-  username: string
+  email: string
   role: UserRole
 }
 
 interface AuthContextType {
   user: User | null
-  login: (username: string, password: string) => boolean
+  login: (email: string, password: string) => boolean
+  register: (email: string, password: string) => boolean
   logout: () => void
-  enterGuestMode: () => void
   isAuthenticated: boolean
-  isGuest: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -32,16 +31,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const login = (username: string, password: string): boolean => {
+  const login = (email: string, password: string): boolean => {
     const credentials = {
       "admin@msu.edu": { password: "admin123", role: "admin" as UserRole },
       "researcher@msu.edu": { password: "research123", role: "researcher" as UserRole },
     }
 
-    const userCreds = credentials[username as keyof typeof credentials]
+    const userCreds = credentials[email as keyof typeof credentials]
 
     if (userCreds && userCreds.password === password) {
-      const newUser = { username, role: userCreds.role }
+      const newUser = { email, role: userCreds.role }
       setUser(newUser)
       localStorage.setItem("hdms-user", JSON.stringify(newUser))
 
@@ -49,7 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const roleRedirects = {
           admin: "/admin",
           researcher: "/researcher",
-          guest: "/visitor",
         }
         window.location.href = roleRedirects[userCreds.role]
       }, 100)
@@ -60,8 +58,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false
   }
 
+   const register = (email: string, password: string): boolean => {
+     return true
+   }
+   
   const enterGuestMode = () => {
-    const guestUser = { username: "Guest", role: "guest" as UserRole }
+    const guestUser = { email: "Guest", role: "guest" as UserRole }
     setUser(guestUser)
     localStorage.setItem("hdms-user", JSON.stringify(guestUser))
 
@@ -82,10 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         login,
+        register,
         logout,
-        enterGuestMode,
         isAuthenticated: !!user,
-        isGuest: user?.role === "guest",
+
       }}
     >
       {children}

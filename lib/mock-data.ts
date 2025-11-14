@@ -106,7 +106,7 @@ export const mockSpecimens: Specimen[] = [
   {
     id: "5",
     scientificName: "Lilium michiganense",
-    commonName: "Michigan Lily",
+    commonName: "Mindanao Lily",
     family: "Liliaceae",
     genus: "Lilium",
     collector: "Dr. Lisa Thompson",
