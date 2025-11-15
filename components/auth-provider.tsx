@@ -2,29 +2,40 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { auth, db } from "@/config/firebase"
+
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  User as FirebaseUser,
+  onAuthStateChanged,
+  sendEmailVerification
 } from "firebase/auth"
-import { doc, getDoc, setDoc } from "@/config/firebase"
+
+import { doc, getDoc, setDoc } from "firebase/firestore"
 import { toast } from "sonner"
 
-export type UserRole = "admin" | "researcher" | "guest"
+
 
 export interface User {
+  id: string
   email: string
-  role: UserRole
+  role: string
   firstName?: string
   lastName?: string
-  id?: string
+  createdAt: string
 }
 
 interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<boolean>
-  register: (data: { email: string; password: string; role: UserRole; firstName?: string; lastName?: string }) => Promise<boolean>
+  register: (data: {
+    email: string
+    password: string
+    role: string
+    firstName?: string
+    lastName?: string
+    createdAt: string
+  }) => Promise<boolean>
   logout: () => Promise<void>
   isAuthenticated: boolean
 }
@@ -34,68 +45,107 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
 
-  // Load user from localStorage on mount
+  // Load user on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem("hdms-user")
-    if (savedUser) {
-      const parsed = JSON.parse(savedUser)
+    const saved = localStorage.getItem("hdms-user")
+    if (saved) {
+      const parsed = JSON.parse(saved)
       setUser(parsed)
       document.cookie = `hdms-user=${encodeURIComponent(JSON.stringify(parsed))}; path=/;`
     }
   }, [])
 
-  const saveUser = (user: User | null) => {
-    setUser(user)
-    if (user) {
-      localStorage.setItem("hdms-user", JSON.stringify(user))
-      document.cookie = `hdms-user=${encodeURIComponent(JSON.stringify(user))}; path=/;`
+  // Save user helper
+  const saveUser = (u: User | null) => {
+    setUser(u)
+    if (u) {
+      localStorage.setItem("hdms-user", JSON.stringify(u))
+      document.cookie = `hdms-user=${encodeURIComponent(JSON.stringify(u))}; path=/;`
     } else {
       localStorage.removeItem("hdms-user")
       document.cookie = `hdms-user=; Max-Age=0; path=/;`
     }
   }
 
-  // Login with Firebase
+  // Sync with Firebase Auth real-time state
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (fbUser) => {
+      if (!fbUser) {
+        saveUser(null)
+        return
+      }
+
+      const snap = await getDoc(doc(db, "users", fbUser.uid))
+      if (snap.exists()) {
+        const data = snap.data()
+        const userObj: User = {
+          id: fbUser.uid,
+          email: fbUser.email!,
+          role: data.role,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          createdAt: data.createdAt,
+        }
+
+        saveUser(userObj)
+      }
+    })
+
+    return () => unsub()
+  }, [])
+
+  // Login
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const fbUser = userCredential.user
+      const { user: fbUser } = await signInWithEmailAndPassword(auth, email, password)
 
-      // Get Firestore user data
-      const docRef = doc(db, "users", fbUser.uid)
-      const docSnap = await getDoc(docRef)
-      if (!docSnap.exists()) {
+          if (!fbUser.emailVerified) {
+          await signOut(auth)
+          toast.error("Please verify your email before logging in.")
+          return false
+        }
+
+
+      const snap = await getDoc(doc(db, "users", fbUser.uid))
+      if (!snap.exists()) {
         toast.error("User profile not found")
         return false
       }
 
-      const userData = docSnap.data() as User
+      const data = snap.data()
+
       const userObj: User = {
         id: fbUser.uid,
-        email: fbUser.email || "",
-        role: userData.role,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+        email: fbUser.email!,
+        role: data.role,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        createdAt: data.createdAt,
       }
 
+    // 3️⃣ Save locally
       saveUser(userObj)
       toast.success("Login successful!")
       return true
     } catch (err: any) {
-      console.error(err)
-      toast.error(err.message || "Login failed")
+      toast.error(err.message)
       return false
     }
   }
 
-  // Register new user
-  const register = async (data: { email: string; password: string; role: UserRole; firstName?: string; lastName?: string }): Promise<boolean> => {
+  // Register (🔥 with createdAt saved)
+  const register = async (data: {
+    email: string
+    password: string
+    role: string
+    firstName?: string
+    lastName?: string
+    createdAt: string
+  }): Promise<boolean> => {
     try {
-      const { email, password, role, firstName, lastName } = data
+      const { email, password, firstName, lastName, role, createdAt } = data
 
-      // Create user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      const fbUser = userCredential.user
+      const { user: fbUser } = await createUserWithEmailAndPassword(auth, email, password)
 
       // Create Firestore document
       const userDoc: User = {
@@ -104,29 +154,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role,
         firstName,
         lastName,
+        createdAt, // 🔥 SAVED HERE
       }
+
       await setDoc(doc(db, "users", fbUser.uid), userDoc)
 
+          // 3️⃣ Send verification email (CORRECT WAY)
+        await sendEmailVerification(fbUser)
+
+        // 4️ Force logout so user must verify first
+        await signOut(auth)
+
       saveUser(userDoc)
-      toast.success("Registration successful!")
+        toast.success("Verification email sent! Please check your inbox.")
       return true
     } catch (err: any) {
-      console.error(err)
-      toast.error(err.message || "Registration failed")
+      toast.error(err.message)
       return false
     }
   }
 
   // Logout
   const logout = async () => {
-    try {
-      await signOut(auth)
-      saveUser(null)
-      toast.success("Logged out successfully")
-    } catch (err: any) {
-      console.error(err)
-      toast.error(err.message || "Logout failed")
-    }
+    await signOut(auth)
+    saveUser(null)
+    toast.success("Logged out")
   }
 
   return (
@@ -144,11 +196,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-// Hook to use auth context
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useAuth must be used inside AuthProvider")
   }
   return context
 }

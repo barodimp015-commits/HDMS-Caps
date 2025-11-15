@@ -9,12 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Leaf, Eye, EyeOff } from "lucide-react"
 import { Checkbox } from "./ui/checkbox"
 import Link from "next/link"
-
-// Firebase imports
-import { auth, db } from "@/config/firebase" // make sure config exports auth and db
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
-import { doc, setDoc } from "firebase/firestore"
 import { toast } from "sonner"
+
+// Import AuthProvider hook
+import { useAuth } from "@/components/auth-provider"
 
 interface RegisterModalProps {
   open: boolean
@@ -22,6 +20,8 @@ interface RegisterModalProps {
 }
 
 export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
+  const { register } = useAuth()
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -31,11 +31,11 @@ export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
     agreeToTerms: false,
     role: "guest",
   })
+
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  // Optional: ref to focus email input on some errors
   const emailInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +62,6 @@ export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
     e.preventDefault()
     setError("")
 
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match")
       return
@@ -76,60 +75,28 @@ export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
     setIsLoading(true)
 
     try {
-      // 1) Create the Firebase Auth user
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      )
-      const user = userCredential.user
-
-      // 2) Update profile displayName (optional)
-      const displayName = `${formData.firstName} ${formData.lastName}`.trim()
-      if (displayName) {
-        await updateProfile(user, { displayName })
-      }
-
-      // 3) Create Firestore user document
-      const userDoc = {
-        uid: user.uid,
-        firstName: formData.firstName || null,
-        lastName: formData.lastName || null,
+      const success = await register({
         email: formData.email,
-        role: formData.role || "guest",
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        role: formData.role,
+
+        // ✅ Save createdAt to Firebase
         createdAt: new Date().toISOString(),
-        // address fields not present in this modal; add them if you collect them later
+      })
+
+      if (!success) {
+        setError("Registration failed. Please try again.")
+        return
       }
 
-      await setDoc(doc(db, "users", user.uid), userDoc)
-         toast.success("Registration successful! You can now log in.")
-
-
-      // Success: close modal and reset form (you can show a success toast instead)
+      toast.success("Registration successful! You can now log in.")
       resetForm()
       onOpenChange(false)
     } catch (err: any) {
-      console.error("Registration error:", err)
-
-      // Map common Firebase Auth errors
-      switch (err?.code) {
-        case "auth/email-already-in-use":
-          setError("Email already in use. Please try another email or log in.")
-          // focus and scroll to email input
-          setTimeout(() => {
-            emailInputRef.current?.focus()
-            emailInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
-          }, 50)
-          break
-        case "auth/invalid-email":
-          setError("Invalid email address.")
-          break
-        case "auth/weak-password":
-          setError("Password is too weak. Please use at least 6 characters.")
-          break
-        default:
-          setError(err?.message || "Registration failed. Please try again.")
-      }
+      console.error(err)
+      setError(err?.message || "Registration failed.")
     } finally {
       setIsLoading(false)
     }
@@ -153,8 +120,10 @@ export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
               Enter your credentials to access the herbarium management system
             </CardDescription>
           </CardHeader>
+
           <CardContent className="w-full max-w-2xl mx-auto">
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
@@ -167,6 +136,7 @@ export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
                     required
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
@@ -215,7 +185,11 @@ export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -240,18 +214,28 @@ export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </Button>
                 </div>
               </div>
 
-              {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}
+              {error && (
+                <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                  {error}
+                </div>
+              )}
 
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="terms"
                   checked={formData.agreeToTerms}
-                  onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, agreeToTerms: checked as boolean })
+                  }
                 />
                 <Label htmlFor="terms" className="text-sm font-normal">
                   I agree to the{" "}

@@ -1,14 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, Menu, X, Leaf, Database, MapPin, BookOpen, Info, LogIn } from "lucide-react"
+import { Search, Menu, X, Leaf, Database, MapPin, BookOpen, Info, LogIn, User, ChevronDown, UserPlus, LogOut, Settings } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import Image from "next/image"
+// Import AuthProvider hook
+import { useAuth } from "@/components/auth-provider"
+import { db, doc, getDoc } from "@/config/firebase"
 
 export function VisitorNavbar() {
+    const { user,logout } = useAuth()
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
 
   const navItems = [
     { href: "/visitor/specimens", label: "Browse Specimens", icon: Database },
@@ -17,7 +25,24 @@ export function VisitorNavbar() {
     { href: "/about", label: "About", icon: Info },
   ]
 
+ 
+  useEffect(() => {
+  async function fetchUserData() {
+    if (!user) return
 
+    const snap = await getDoc(doc(db, "users", user.id))
+    if (snap.exists()) {
+      const data = snap.data()
+
+      // Example: load profile photo
+      if (data.profilePhoto) {
+        setProfilePhoto(data.profilePhoto)
+      }
+    }
+  }
+
+  fetchUserData()
+}, [user])
 
   return (
     <>
@@ -61,9 +86,74 @@ export function VisitorNavbar() {
                   Guest Mode
                 </Badge>
 
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden cursor-pointer">
+                    {profilePhoto ? (
+                      <div className="h-8 w-8 relative rounded-full overflow-hidden">
+                        <Image
+                          src={profilePhoto}
+                          alt="Profile Photo"
+                          fill
+                          unoptimized={profilePhoto.startsWith("data:")}
+                          className="object-cover rounded-full"
+                        />
+                      </div>
+                    ) : (
+                      <User className="h-4 w-4 text-white" />
+                    )}
+                  </div>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-48" align="end" sideOffset={8}>
+                {user ? (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      className="text-red-600 focus:text-red-600"
+                      onClick={logout}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/login" className="flex items-center gap-2">
+                        <LogIn className="h-4 w-4" />
+                        Login
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/register" className="flex items-center gap-2">
+                        <UserPlus className="h-4 w-4" />
+                        Register
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
               <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
+
             </div>
           </div>
 
