@@ -3,7 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 
-export type UserRole = "admin" | "researcher" 
+export type UserRole = "admin" | "researcher"
 
 export interface User {
   email: string
@@ -24,12 +24,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    // Check for existing session on mount
     const savedUser = localStorage.getItem("hdms-user")
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
+      const parsed = JSON.parse(savedUser)
+      setUser(parsed)
+
+      // Sync cookie with localStorage on load
+      document.cookie = `hdms-user=${encodeURIComponent(
+        JSON.stringify(parsed)
+      )}; path=/;`
     }
   }, [])
+
+  const saveUser = (user: User | null) => {
+    setUser(user)
+
+    if (user) {
+      localStorage.setItem("hdms-user", JSON.stringify(user))
+      document.cookie = `hdms-user=${encodeURIComponent(
+        JSON.stringify(user)
+      )}; path=/;`
+    } else {
+      localStorage.removeItem("hdms-user")
+      document.cookie = `hdms-user=; Max-Age=0; path=/;`
+    }
+  }
 
   const login = (email: string, password: string): boolean => {
     const credentials = {
@@ -41,15 +60,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (userCreds && userCreds.password === password) {
       const newUser = { email, role: userCreds.role }
-      setUser(newUser)
-      localStorage.setItem("hdms-user", JSON.stringify(newUser))
+      saveUser(newUser)
 
       setTimeout(() => {
-        const roleRedirects = {
-          admin: "/admin",
-          researcher: "/researcher",
-        }
-        window.location.href = roleRedirects[userCreds.role]
+        window.location.href = "/" + userCreds.role
       }, 100)
 
       return true
@@ -58,24 +72,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false
   }
 
-   const register = (email: string, password: string): boolean => {
-     return true
-   }
-   
-  const enterGuestMode = () => {
-    const guestUser = { email: "Guest", role: "guest" as UserRole }
-    setUser(guestUser)
-    localStorage.setItem("hdms-user", JSON.stringify(guestUser))
-
-    setTimeout(() => {
-      window.location.href = "/visitor"
-    }, 100)
-  }
+  const register = () => true
 
   const logout = () => {
-    setUser(null)
-    localStorage.removeItem("hdms-user")
-
+    saveUser(null)
     window.location.href = "/"
   }
 
@@ -87,7 +87,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         isAuthenticated: !!user,
-
       }}
     >
       {children}
@@ -97,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext)
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider")
   }
   return context
