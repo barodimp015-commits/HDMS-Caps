@@ -27,6 +27,7 @@ import {
   where,
   orderBy,
   limit,
+  serverTimestamp
 } from "firebase/firestore"
 
 // Firebase Config
@@ -69,6 +70,7 @@ export {
   where,
   orderBy,
   limit,
+  serverTimestamp,
 }
 
 export default app

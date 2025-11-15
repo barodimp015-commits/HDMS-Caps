@@ -6,11 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, Menu, X, Leaf, Database, MapPin, BookOpen, Info, LogIn } from "lucide-react"
-import { LoginModal } from "@/components/login-modal"
 
 export function VisitorNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
   const navItems = [
     { href: "/visitor/specimens", label: "Browse Specimens", icon: Database },
@@ -59,14 +57,10 @@ export function VisitorNavbar() {
                   <Input placeholder="Search specimens..." className="pl-10 w-64" />
                 </div>
               </div>
-                <Badge variant="outline" className="hidden sm:flex">
+                <Badge variant="outline" className="hidden sm:flex ">
                   Guest Mode
                 </Badge>
 
-                <Button variant="default" size="sm" onClick={() => setIsLoginModalOpen(true)}>
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Login
-                </Button>
               <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
@@ -104,7 +98,6 @@ export function VisitorNavbar() {
         </div>
       </nav>
 
-      <LoginModal open={isLoginModalOpen} onOpenChange={() => setIsLoginModalOpen(false)} />
     </>
   )
 }

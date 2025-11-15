@@ -1,29 +1,32 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useAuth } from "@/components/auth-provider"
 import { Leaf, Eye, EyeOff } from "lucide-react"
+import { Checkbox } from "./ui/checkbox"
+import { useAuth } from "@/components/auth-provider"
 
 interface LoginModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onForgotPasswordClick?: () => void
 }
 
-export function LoginModal({ open, onOpenChange }: LoginModalProps) {
+export function LoginModal({ open, onOpenChange, onForgotPasswordClick }: LoginModalProps) {
+  const router = useRouter()
+  const { login } = useAuth()
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-
-  const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,10 +39,18 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
         onOpenChange(false)
         setEmail("")
         setPassword("")
+
+        // Redirect based on role stored in localStorage
+        const storedUser = localStorage.getItem("hdms-user")
+        const user = storedUser ? JSON.parse(storedUser) : null
+        if (user?.role === "admin") router.push("/admin")
+        else if (user?.role === "researcher") router.push("/researcher")
+        else router.push("/visitor")
       } else {
         setError("Invalid email or password")
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.error(err)
       setError("Login failed. Please try again.")
     } finally {
       setIsLoading(false)
@@ -60,7 +71,9 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
 
         <Card className="border-0 shadow-none">
           <CardHeader className="px-0 pt-0">
-            <CardDescription>Enter your credentials to access the herbarium management system</CardDescription>
+            <CardDescription>
+              Enter your credentials to access the herbarium management system
+            </CardDescription>
           </CardHeader>
           <CardContent className="px-0">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -78,7 +91,17 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="p-0 h-auto text-sm text-secondary hover:text-yellow-600"
+                    onClick={onForgotPasswordClick}
+                  >
+                    Forgot Password?
+                  </Button>
+                </div>
                 <div className="relative">
                   <Input
                     id="password"
@@ -96,12 +119,15 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
                   </Button>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="remember" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(!!checked)} />
+                  <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
+                    Remember me
+                  </Label>
                 </div>
               </div>
 
@@ -111,24 +137,6 @@ export function LoginModal({ open, onOpenChange }: LoginModalProps) {
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
-
-            <div className="mt-6 pt-4 border-t border-border">
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p className="font-medium">Demo Credentials:</p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-muted/50 p-2 rounded">
-                    <p className="font-medium">Admin:</p>
-                    <p>admin@msu.edu</p>
-                    <p>admin123</p>
-                  </div>
-                  <div className="bg-muted/50 p-2 rounded">
-                    <p className="font-medium">Researcher:</p>
-                    <p>researcher@msu.edu</p>
-                    <p>research123</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </DialogContent>
