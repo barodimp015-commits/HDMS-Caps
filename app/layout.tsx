@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
 import { AuthProvider } from "@/components/auth-provider"
 import "./globals.css"
+import { Toaster } from "sonner"
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -39,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
       <body className="font-dm-sans">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>{children}
+           <Toaster position="top-right" richColors />
+        </AuthProvider>
       </body>
     </html>
   )

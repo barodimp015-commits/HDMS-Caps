@@ -1,15 +1,14 @@
-"use client"
-
+import { getAuthenticatedUser } from "@/lib/auth-server"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/components/auth-provider"
 import { Leaf, Users, Target, Award, Mail, MapPin, Phone } from "lucide-react"
+import { redirect } from "next/navigation"
 
-export default function AboutPage() {
-  const { user } = useAuth()
+export default async function AboutPage() {
+  const user = await getAuthenticatedUser()
 
   if (!user) {
-    return null
+    redirect("/visitor") // or return null
   }
 
   return (

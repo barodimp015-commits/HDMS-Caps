@@ -19,18 +19,15 @@ export function VisitorNavbar() {
     { href: "/about", label: "About", icon: Info },
   ]
 
-  const handleLogin = () => {
-    console.log("[v0] Login button clicked")
-    setIsLoginModalOpen(true)
-  }
+
 
   return (
     <>
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7x2 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href="/visitor" className="flex items-center space-x-2">
                 <Leaf className="h-8 w-8 text-primary" />
                 <div className="hidden sm:block">
                   <h1 className="text-xl font-bold">MSU Herbarium</h1>
@@ -62,16 +59,14 @@ export function VisitorNavbar() {
                   <Input placeholder="Search specimens..." className="pl-10 w-64" />
                 </div>
               </div>
+                <Badge variant="outline" className="hidden sm:flex">
+                  Guest Mode
+                </Badge>
 
-              <Badge variant="outline" className="hidden sm:flex">
-                Guest Mode
-              </Badge>
-
-              <Button variant="default" size="sm" onClick={() => setIsLoginModalOpen(true)}>
-                <LogIn className="mr-2 h-4 w-4" />
-                Login
-              </Button>
-
+                <Button variant="default" size="sm" onClick={() => setIsLoginModalOpen(true)}>
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Login
+                </Button>
               <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>

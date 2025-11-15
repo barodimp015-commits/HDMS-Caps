@@ -49,7 +49,7 @@ export default function LandingPageClient() {
 
       {/* Hero Section */}
       <section className="relative py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <div className="absolute inset-0 bg-[url('/placeholder-zwnnu.png')] bg-cover bg-center opacity-10"></div>
+        <div className="absolute inset-0 opacity-10"></div>
         <div className="relative container mx-auto text-center max-w-4xl">
           <div className="mb-8">
             <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full mb-6">
@@ -65,20 +65,11 @@ export default function LandingPageClient() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button
-              onClick={handleExploreAsGuest}
-              variant="outline"
-              size="lg"
-              className="text-lg px-8 py-6 bg-transparent"
-            >
-              Get Started
-            </Button>
-
-            <Button
               onClick={() => setShowLoginModal(true)}
               size="lg"
               className="text-lg px-8 py-6"
             >
-              Login
+              Get Started
             </Button>
           </div>
 

@@ -112,7 +112,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="text-lg font-semibold text-sidebar-foreground capitalize">
               {user.role === "admin" ? "Admin" : user.role === "researcher" ? "Researcher" : "Guest"}
             </div>
-            <div className="text-xs text-sidebar-foreground/50 mt-1">{user.username}</div>
+            <div className="text-xs text-sidebar-foreground/50 mt-1">{user.email}</div>
             <div
               className={cn(
                 "inline-block px-2 py-1 text-xs rounded-full mt-2",
@@ -161,7 +161,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-3" />
-              {user.role === "guest" ? "Exit Guest Mode" : "Logout"}
+              Logout
             </Button>
           </div>
         </div>
