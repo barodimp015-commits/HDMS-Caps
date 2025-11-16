@@ -106,12 +106,12 @@ export default function SpecimensPage() {
               Browse and search through {mockSpecimens.length} digitized plant specimens
             </p>
           </div>
-          {user.role === "admin" && (
+     
             <Button onClick={handleAddSpecimen} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               Add Specimen
             </Button>
-          )}
+
         </div>
 
         {/* Search and Filters */}

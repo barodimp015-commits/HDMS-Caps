@@ -42,7 +42,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     router.push("/")
   }
 
-  const getNavigationItems = () => {
+const getNavigationItems = () => {
     const baseNavigation = [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { name: "Specimens", href: "/specimens", icon: Database },
@@ -60,7 +60,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     } else if (user?.role === "researcher") {
       return [
         ...baseNavigation,
-        { name: "Reports", href: "/reports", icon: BarChart3 },
+        { name: "Reports", href: "/researcher/reports", icon: BarChart3 },
         { name: "About", href: "/about", icon: Info },
       ]
     } else {
