@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useAuth } from "@/components/auth-provider"
+import { db, doc } from "@/config/firebase"
 import { Button } from "@/components/ui/button"
 import { useRouter, usePathname } from "next/navigation"
 import {
@@ -17,9 +18,13 @@ import {
   X,
   Users,
   Settings,
+  User,
 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
+import { getDoc } from "firebase/firestore"
+
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -30,6 +35,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+     const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
 
   const handleLogout = () => {
     logout()
@@ -69,7 +75,28 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     router.push("/login")
     return null
   }
+  
+ 
+  useEffect(() => {
+  async function fetchUserData() {
+    if (!user) return
 
+    const snap = await getDoc(doc(db, "users", user.id))
+    
+    if (snap.exists()) {
+      const data = snap.data()
+        console.log("Data: ",data)
+      // Example: load profile photo
+      if (data.profilePhoto) {
+        setProfilePhoto(data.profilePhoto)
+      }
+    }
+  }
+
+  fetchUserData()
+}, [user])
+
+  console.log("Photo:",user.profilePhoto)
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile sidebar backdrop */}
@@ -110,21 +137,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="p-6 border-b border-sidebar-border">
             <div className="text-sm text-sidebar-foreground/70">Welcome back,</div>
             <div className="text-lg font-semibold text-sidebar-foreground capitalize">
-              {user.role === "admin" ? "Admin" : user.role === "researcher" ? "Researcher" : "Guest"}
+              {user.role}
+              
             </div>
-            <div className="text-xs text-sidebar-foreground/50 mt-1">{user.email}</div>
-            <div
-              className={cn(
-                "inline-block px-2 py-1 text-xs rounded-full mt-2",
-                user.role === "admin"
-                  ? "bg-red-100 text-red-800"
-                  : user.role === "researcher"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-gray-100 text-gray-800",
-              )}
-            >
-              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-            </div>
+            <div className="text-xs text-sidebar-foreground/50 mt-1"> {user.email}</div>
+           
           </div>
 
           {/* Navigation */}
@@ -171,7 +188,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="lg:pl-64">
         {/* Top bar */}
         <header className="bg-card border-b border-border sticky top-0 z-30">
-          <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center justify-between px-8 py-4">
             <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSidebarOpen(true)}>
               <Menu className="h-5 w-5" />
             </Button>
@@ -184,7 +201,29 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   day: "numeric",
                 })}
               </div>
+
+              
             </div>
+            <div className="relative flex items-center gap-4">
+            <span className="text-sm font-semibold">{user.firstName} {user.lastName}</span>
+             <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden cursor-pointer">
+                {profilePhoto ? (
+                  <div className="h-8 w-8 relative rounded-full overflow-hidden">
+                    <Image
+                      src={profilePhoto}
+                      alt="Profile Photo"
+                      fill
+                      unoptimized={profilePhoto.startsWith("data:")}
+                      className="object-cover rounded-full"
+                    />
+                  </div>
+                ) : (
+                  <User className="h-4 w-4 text-white" />
+                )}
+              </div>
+              
+              </div>
+
           </div>
         </header>
 

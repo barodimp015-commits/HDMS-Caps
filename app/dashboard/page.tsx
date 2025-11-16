@@ -149,7 +149,7 @@ export default function DashboardPage() {
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-primary/10 via-background to-secondary/10 rounded-lg p-6">
           <h1 className="text-3xl font-bold font-space-grotesk text-foreground mb-2">
-            Welcome back, {user.role === "admin" ? "Admin" : user.role === "researcher" ? "Researcher" : "Guest"}!
+           Researcher Dashboard {user.role === "admin" ? "Admin" : user.role === "researcher" ? "Researcher" : " "}!
           </h1>
           <p className="text-muted-foreground text-lg">
             {user.role === "admin"

@@ -31,9 +31,10 @@ export function VisitorNavbar() {
     if (!user) return
 
     const snap = await getDoc(doc(db, "users", user.id))
+    
     if (snap.exists()) {
       const data = snap.data()
-
+        console.log("Data: ",data)
       // Example: load profile photo
       if (data.profilePhoto) {
         setProfilePhoto(data.profilePhoto)

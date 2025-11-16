@@ -1,21 +1,81 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Database, BookOpen, MapPin, FileText, Plus, Clock } from "lucide-react"
+import { Database, BookOpen, MapPin, FileText, Plus, Clock, Leaf, TrendingUp, BarChart3, Download } from "lucide-react"
+import { getSpecimenStats } from "@/lib/mock-data"
+import { cn } from "@/lib/utils"
+import router from "next/router"
+import Link from "next/link"
 
 export default function ResearcherDashboard() {
+    const getQuickActions = [
+        {
+          icon: Plus,
+          title: "Submit Specimen",
+          description: "Add specimen for approval",
+          action: "/specimens/submit",
+          color: "text-primary",
+        },
+        {
+          icon: Database,
+          title: "Browse Specimens",
+          description: "Explore the collection",
+          action: "/specimens",
+          color: "text-secondary",
+        },
+        {
+          icon: BarChart3,
+          title: "View Reports",
+          description: "Access analytics and charts",
+          action: "/reports",
+          color: "text-primary",
+        },
+        {
+          icon: Download,
+          title: "Export Data",
+          description: "Download specimen information",
+          action: "/reports",
+          color: "text-secondary",
+        },
+      ]
+    
+    
+  
+   const stats = getSpecimenStats()
+   const roleCapabilities = {
+    admin: [
+      "Manage all specimen records",
+      "Add, edit, and delete specimens",
+      "Generate comprehensive reports",
+      "Manage user accounts",
+      "Export data in multiple formats",
+      "System configuration and settings",
+    ],
+    researcher: [
+      "View all specimen records",
+      "Add new specimens (pending approval)",
+      "Edit own specimen submissions",
+      "Access detailed specimen information",
+      "View reports and analytics",
+      "Bookmark favorite specimens",
+      "Download specimen data",
+    ],
+    guest: [
+      "Browse public specimen records",
+      "View basic specimen information",
+      "Search and filter specimens",
+      "View specimen locations on map",
+      "Bookmark specimens locally",
+    ],
+  }
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
+        <div className="bg-gradient-to-r from-primary/10 via-background to-secondary/10 rounded-lg p-6">
           <h1 className="text-3xl font-bold tracking-tight">Researcher Dashboard</h1>
           <p className="text-muted-foreground">Contribute to the herbarium collection and access research data</p>
-        </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Submit Specimen
-        </Button>
-      </div>
+       
+       </div>
+
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -28,30 +88,30 @@ export default function ResearcherDashboard() {
             <p className="text-xs text-muted-foreground">3 pending approval</p>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Bookmarked</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">28</div>
-            <p className="text-xs text-muted-foreground">Saved specimens</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Available Specimens</CardTitle>
-            <Database className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,247</div>
-            <p className="text-xs text-muted-foreground">Total in database</p>
-          </CardContent>
-        </Card>
-
-        <Card>
+              <Card className="bg-card border-border hover:shadow-md transition-shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Total Specimens</CardTitle>
+                  <Database className="h-4 w-4 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold font-space-grotesk text-foreground">
+                    {stats.totalSpecimens.toLocaleString()}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Digitized plant specimens</p>
+                </CardContent>
+              </Card>
+    
+              <Card className="bg-card border-border hover:shadow-md transition-shadow">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Plant Families</CardTitle>
+                  <Leaf className="h-4 w-4 text-secondary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold font-space-grotesk text-foreground">{stats.families}</div>
+                  <p className="text-xs text-muted-foreground mt-1">Taxonomic families represented</p>
+                </CardContent>
+              </Card>
+          <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Locations Visited</CardTitle>
             <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -60,11 +120,46 @@ export default function ResearcherDashboard() {
             <div className="text-2xl font-bold">8</div>
             <p className="text-xs text-muted-foreground">Collection sites</p>
           </CardContent>
-        </Card>
+        </Card>                
       </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="font-space-grotesk flex items-center">
+                <TrendingUp className="h-5 w-5 mr-2 text-primary" />
+                Your Access Level
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Role:</span>
+                  <span
+                    className={cn(
+                      "text-sm px-2 py-1 rounded capitalize bg-blue-100 text-blue-800",
+                   
+                    )}
+                  >
+                    Researcher
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <span className="text-sm font-medium">Capabilities:</span>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    {roleCapabilities['researcher' as keyof typeof roleCapabilities]?.map((capability, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-primary mr-2">•</span>
+                        {capability}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        
+          <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle>My Recent Activity</CardTitle>
             <CardDescription>Your recent submissions and interactions</CardDescription>
@@ -101,36 +196,35 @@ export default function ResearcherDashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
 
-        <Card className="col-span-3">
+              {/* Quick Actions */}
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common researcher tasks</CardDescription>
+            <CardTitle className="font-space-grotesk">Quick Actions</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <Button className="w-full justify-start bg-transparent" variant="outline">
-              <Plus className="mr-2 h-4 w-4" />
-              Submit New Specimen
-            </Button>
-            <Button className="w-full justify-start bg-transparent" variant="outline">
-              <FileText className="mr-2 h-4 w-4" />
-              View My Submissions
-            </Button>
-            <Button className="w-full justify-start bg-transparent" variant="outline">
-              <Database className="mr-2 h-4 w-4" />
-              Browse Specimens
-            </Button>
-            <Button className="w-full justify-start bg-transparent" variant="outline">
-              <BookOpen className="mr-2 h-4 w-4" />
-              My Bookmarks
-            </Button>
-            <Button className="w-full justify-start bg-transparent" variant="outline">
-              <MapPin className="mr-2 h-4 w-4" />
-              Explore Map
-            </Button>
+          <CardContent>
+            <div
+              className={cn(
+                "grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
+               
+              )}
+            >
+              {getQuickActions.map((action, index) => (
+                <Link
+                  key={index}
+                  className="p-4 h-auto flex-col items-start text-left hover:border-b-4 hover:border-accent  transition-colors bg-transparent shadow-md"
+                  href={action.action}
+                >
+                  <action.icon className={cn("h-6 w-6 mb-2", action.color)} />
+                  <div className="font-medium">{action.title}</div>
+                  <div className="text-sm text-muted-foreground">{action.description}</div>
+                </Link>
+              ))}
+            </div>
           </CardContent>
         </Card>
-      </div>
     </div>
-  )
-}
+  
+)}
+

@@ -23,6 +23,7 @@ export interface User {
   firstName?: string
   lastName?: string
   createdAt: string
+  profilePhoto?:string
 }
 
 interface AuthContextType {
@@ -101,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           if (!fbUser.emailVerified) {
           await signOut(auth)
-          toast.error("Please verify your email before logging in.")
+          toast.error("Please check your spam and verify your email before logging in.")
           return false
         }
 
