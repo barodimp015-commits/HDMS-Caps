@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { auth, db } from "@/config/firebase"
+import {User} from '@/model/user'
 
 import {
   signInWithEmailAndPassword,
@@ -15,16 +16,6 @@ import { doc, getDoc, setDoc } from "firebase/firestore"
 import { toast } from "sonner"
 
 
-
-export interface User {
-  id: string
-  email: string
-  role: string
-  firstName?: string
-  lastName?: string
-  createdAt: string
-  profilePhoto?:string
-}
 
 interface AuthContextType {
   user: User | null

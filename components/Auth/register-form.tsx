@@ -7,19 +7,19 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Leaf, Eye, EyeOff } from "lucide-react"
-import { Checkbox } from "./ui/checkbox"
+import { Checkbox } from "../ui/checkbox"
 import Link from "next/link"
 import { toast } from "sonner"
 
 // Import AuthProvider hook
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/components/Auth/auth-provider"
 
 interface RegisterModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function RegisterModal({ open, onOpenChange }: RegisterModalProps) {
+export function RegisterForm({ open, onOpenChange }: RegisterModalProps) {
   const { register } = useAuth()
 
   const [formData, setFormData] = useState({

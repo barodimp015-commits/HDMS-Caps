@@ -1,26 +1,33 @@
-export type UserRole = "admin" | "researcher" | "guest"
 
-export interface UserData {
-  firstName: string;
-  lastName: string;
-  studentId: string;
-  email: string;
-  role: UserRole
-  createdAt: string;
-  status?: string | null;
-  lastLogin?: string | null;
+
+export interface User {
+  id: string
+  firstName?: string
+  lastName?: string
+  email: string
+   role: string
+  createdAt: string
+  status?: string | null
+  lastLogin?: string | null
+  profilePhoto?: string
 }
 
-export interface Researcher {
-  id: string
-  firstName: string
-  lastName: string
-  email: string
+
+export interface Researcher extends User {
   department?: string
   specialization?: string
   phone?: string
   address?: string
   role: "researcher"
-  createdAt: Date
-  updatedAt: Date
+  updatedAt: string
+}
+
+
+export interface Admin extends User {
+  department?: string
+  specialization?: string
+  phone?: string
+  address?: string
+  role: "Admin"
+  updatedAt: string
 }

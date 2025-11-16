@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/components/Auth/auth-provider"
 import { mockSpecimens } from "@/lib/mock-data"
 import { Search, Filter, Plus, Grid, List, SortAsc, SortDesc } from "lucide-react"
 

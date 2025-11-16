@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/components/Auth/auth-provider"
 import { db, doc } from "@/config/firebase"
 import { Button } from "@/components/ui/button"
 import { useRouter, usePathname } from "next/navigation"
@@ -205,7 +205,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               
             </div>
             <div className="relative flex items-center gap-4">
-            <span className="text-sm font-semibold">{user.firstName} {user.lastName}</span>
+            <span className="text-sm font-semibold capitalize">{user.firstName} {user.lastName}</span>
              <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden cursor-pointer">
                 {profilePhoto ? (
                   <div className="h-8 w-8 relative rounded-full overflow-hidden">

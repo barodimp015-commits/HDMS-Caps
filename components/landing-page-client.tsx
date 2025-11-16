@@ -14,13 +14,18 @@ import {
   Database
 } from "lucide-react"
 
-import { LoginModal } from "@/components/login-modal"
-import { RegisterModal } from "@/components/register-modal"
+import { LoginForm } from "@/components/Auth/login-form"
+import { RegisterForm } from "@/components/Auth/register-form"
+import { ForgotPasswordForm } from "@/components/Auth/forgot-password" // adjust path if different
+
+// Dialog components (used for Forgot Password modal)
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 export default function LandingPageClient() {
   const router = useRouter()
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showRegisterModal, setShowRegisterModal] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
 
   const handleExploreAsGuest = () => router.push("/visitor")
 
@@ -179,7 +184,6 @@ export default function LandingPageClient() {
       </section>
 
       {/* About */}
-
       <section className="py-20 px-4 bg-background">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-8">
@@ -246,8 +250,39 @@ export default function LandingPageClient() {
         </div>
       </footer>
 
-      <LoginModal open={showLoginModal} onOpenChange={setShowLoginModal} />
-      <RegisterModal open={showRegisterModal} onOpenChange={setShowRegisterModal} />
+      {/* Auth Modals */}
+      <LoginForm
+        open={showLoginModal}
+        onOpenChange={(open) => setShowLoginModal(open)}
+        onForgotPasswordClick={() => {
+          setShowLoginModal(false)
+          setShowForgotPassword(true)
+        }}
+      />
+
+      <RegisterForm
+        open={showRegisterModal}
+        onOpenChange={(open) => setShowRegisterModal(open)}
+      />
+
+      {/* Forgot Password Modal (simple Dialog) */}
+      <Dialog open={showForgotPassword} onOpenChange={(open) => setShowForgotPassword(open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4">
+            <ForgotPasswordForm
+              onBackToLogin={() => {
+                // close forgot modal and open login modal
+                setShowForgotPassword(false)
+                setShowLoginModal(true)
+              }}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

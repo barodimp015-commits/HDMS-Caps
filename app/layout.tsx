@@ -1,7 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
-import { AuthProvider } from "@/components/auth-provider"
+import { AuthProvider } from "@/components/Auth/auth-provider"
 import "./globals.css"
 import { Toaster } from "sonner"
 

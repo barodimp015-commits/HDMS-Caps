@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/components/Auth/auth-provider"
 import { mockSpecimens, type Specimen } from "@/lib/mock-data"
 import {
   ArrowLeft,

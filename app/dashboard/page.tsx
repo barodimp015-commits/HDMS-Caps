@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/components/Auth/auth-provider"
 import { getSpecimenStats } from "@/lib/mock-data"
 import {
   Database,

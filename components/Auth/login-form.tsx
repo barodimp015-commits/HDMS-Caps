@@ -8,8 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Leaf, Eye, EyeOff } from "lucide-react"
-import { Checkbox } from "./ui/checkbox"
-import { useAuth } from "@/components/auth-provider"
+import { Checkbox } from "../ui/checkbox"
+import { useAuth } from "@/components/Auth/auth-provider"
 
 interface LoginModalProps {
   open: boolean
@@ -17,7 +17,7 @@ interface LoginModalProps {
   onForgotPasswordClick?: () => void
 }
 
-export function LoginModal({ open, onOpenChange, onForgotPasswordClick }: LoginModalProps) {
+export function LoginForm({ open, onOpenChange, onForgotPasswordClick }: LoginModalProps) {
   const router = useRouter()
   const { login } = useAuth()
 
@@ -136,7 +136,9 @@ export function LoginModal({ open, onOpenChange, onForgotPasswordClick }: LoginM
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
+
             </form>
+           
           </CardContent>
         </Card>
       </DialogContent>

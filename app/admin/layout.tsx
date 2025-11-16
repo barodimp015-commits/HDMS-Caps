@@ -1,5 +1,5 @@
 import type React from "react"
-import { RoleBasedRedirect } from "@/components/role-based-redirect"
+import { RoleBasedRedirect } from "@/components/Auth/role-based-redirect"
 import { DashboardLayout } from "@/components/dashboard-layout"
 
 export default function AdminLayout({
