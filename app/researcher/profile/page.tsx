@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -11,32 +11,52 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Camera, Mail, Award, BookOpen, Leaf, Users, Loader2 } from 'lucide-react'
+import { useAuth } from "@/components/Auth/auth-provider"
+import { db, doc } from "@/config/firebase"
+import { getUserProfile, updateUserProfile } from '@/lib/user'
+import router from 'next/router'
+import { ResearcherData } from '@/model/user'
+
+
+
 
 export default function ResearcherProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+    const [userData, setUserData] = useState<any>(null)
+    const [newSpec, setNewSpec] = useState("");
 
-  const [researcher, setResearcher] = useState({
-    firstName: 'Dr. Sarah',
-    lastName: 'Mitchell',
-    profileImageUrl: '/placeholder-user.jpg',
-    title: 'Principal Research Scientist',
-    department: 'Botany & Plant Biology',
-    institution: 'Mindanao State University',
-    email: 's.mitchell@msu.edu',
-    phone: '+1 (517) 555-0147',
-    researcherId: 'RES-2019-00234',
-    joinDate: 'August 2019',
-    bio: 'Specialist in plant taxonomy and biodiversity conservation with 15+ years of field research experience across North American ecosystems.',
-    specializations: ['Plant Taxonomy', 'Biodiversity Conservation', 'Climate Change Ecology'],
-    publicationCount: 47,
-    herbariaSamples: 1250,
-    collaborators: 12,
-    activeFunding: '$385,000',
-    researchFocus: 'Documenting medicinal plant species and their adaptations to changing climates',
+    
+    // Add state for preview data
+  const [previewData, setPreviewData] = useState({
+    photoUrl: "",
   })
+
+  
+const { user } = useAuth()
+const [researcher, setResearcher] = useState<ResearcherData>({
+  id: "",
+  firstName: '',
+  lastName: '',
+  profilePhoto: '',
+  title: '',
+  department: '',
+  institution: '',
+  email: '',
+  phone: '',
+  researcherId: '',
+  joinDate: '',
+  bio: '',
+  specializations: [],
+  publicationCount: 0,
+  herbariaSamples: 0,
+  collaborators: 0,
+  activeFunding: '',
+  researchFocus: '',
+})
+
 
   const [publications] = useState([
     { year: 2024, title: 'Taxonomic Assessment of Rare Fern Species in Northern Michigan', journal: 'American Journal of Botany', citations: 12 },
@@ -54,37 +74,137 @@ export default function ResearcherProfile() {
     fileInputRef.current?.click()
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file || !userData?.id) return;
 
-    setIsUploading(true)
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setResearcher({ ...researcher, profileImageUrl: event.target?.result as string })
-      }
-      reader.readAsDataURL(file)
-    } finally {
-      setIsUploading(false)
+  setIsUploading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Upload to local storage via API route
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Upload failed:", data.error);
+      return;
     }
+
+    // File URL returned by API
+    const localPath = data.url;
+
+    // Update Firestore with the new image path
+    await updateUserProfile(userData.id, { profilePhoto: localPath });
+
+    // Safe and type-correct state update
+    setResearcher(prev => ({
+      ...prev,
+      profilePhoto: localPath,
+    }));
+  } finally {
+    setIsUploading(false);
+  }
+};
+
+const handleSave = async () => {
+  if (!userData?.id) return
+
+  setIsLoading(true) // show loading state
+
+  try {
+    // Prepare updated profile data from state
+    const updatedProfile = {
+      firstName: researcher.firstName,
+      lastName: researcher.lastName,
+      title: researcher.title,
+      department: researcher.department,
+      email: researcher.email,
+      phone: researcher.phone,
+      bio: researcher.bio,
+      researchFocus: researcher.researchFocus,
+      profilePhoto: researcher.profilePhoto,
+      specializations: researcher.specializations,
+    }
+
+    // Save to Firebase
+    await updateUserProfile(userData.id, updatedProfile)
+
+    // Update local state (optional)
+    setResearcher(prev => ({ ...prev, ...updatedProfile }))
+
+    // Exit edit mode
+    setIsEditing(false)
+
+    console.log("Profile updated successfully")
+  } catch (error) {
+    console.error("Error saving profile:", error)
+  } finally {
+    setIsLoading(false)
+  }
+}
+
+const handleCancel = () => {
+  if (!userData?.id) return
+
+  // Revert state to the last saved version from Firestore/localStorage
+  const storedUser = localStorage.getItem("hdms-user")
+  if (storedUser) {
+    const parsed = JSON.parse(storedUser)
+    setResearcher(prev => ({
+      ...prev,
+      ...parsed // revert to last saved values
+    }))
   }
 
-  const handleSave = async () => {
+  // Clear preview image if any
+  setPreviewData({ photoUrl: "" })
+
+  setIsEditing(false)
+}
+
+
+useEffect(() => {
+  const storedUser = localStorage.getItem("hdms-user")
+  if (!storedUser) {
+    router.push("/")
+    return
+  }
+
+  const parsed = JSON.parse(storedUser)
+  setUserData(parsed)
+
+  const fetchProfile = async () => {
     setIsLoading(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setIsEditing(false)
-    } finally {
-      setIsLoading(false)
+      const profile = await getUserProfile(parsed.id)
+
+      if (profile) {
+        setResearcher(prev => ({
+          ...prev,
+          ...profile
+        }))
+      }
+    } catch (err) {
+      console.error("Profile fetch error:", err)
     }
+    setIsLoading(false)
   }
 
-  const handleCancel = () => {
-    setIsEditing(false)
-  }
 
+  
+  fetchProfile()
+  }, [])
+  
+   
+  
+  
   return (
     <div className="min-h-screen bg-background">
 
@@ -103,7 +223,7 @@ export default function ResearcherProfile() {
                   <div className="relative">
                     <Avatar className="h-[300px] w-[300px] border-4 border-secondary">
                       <AvatarImage 
-                        src={researcher.profileImageUrl || "/placeholder.svg"} 
+                        src={researcher.profilePhoto || "/placeholder.svg"} 
                         alt="Profile" 
                       />
                       <AvatarFallback className="bg-secondary text-black text-xl">
@@ -111,25 +231,31 @@ export default function ResearcherProfile() {
                         {researcher.lastName[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <Button
-                      size="sm"
-                      className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0 bg-primary hover:bg-primary/90"
-                      onClick={handleUploadClick}
-                      disabled={isUploading}
-                    >
-                      {isUploading ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      ) : (
-                        <Camera className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      onChange={handleFileUpload} 
-                      accept="image/*" 
-                      className="hidden" 
-                    />
+                  {isEditing && (
+                      <>
+                        <Button
+                          size="sm"
+                          className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0 bg-primary hover:bg-primary/90"
+                          onClick={handleUploadClick}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? (
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          ) : (
+                            <Camera className="h-4 w-4" />
+                          )}
+                        </Button>
+
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileUpload}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                      </>
+                    )}
+
                   </div>
                   <div className="text-center">
                     <h3 className="text-xl font-semibold text-primary">
@@ -331,25 +457,46 @@ export default function ResearcherProfile() {
                     <CardDescription>Your areas of expertise and specialization</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-6">
-                    <div className="flex flex-wrap gap-2">
-                      {researcher.specializations.map((spec, idx) => (
-                        <Badge 
-                          key={idx} 
-                          className="bg-primary text-white px-3 py-1"
-                        >
-                          {spec}
-                        </Badge>
-                      ))}
-                    </div>
-                    {isEditing && (
-                      <Button 
-                        variant="outline" 
-                        className="mt-4 border-secondary/20 text-primary hover:bg-secondary/10"
+                  <div className="flex flex-wrap gap-2">
+                    {researcher.specializations.map((spec, idx) => (
+                      <Badge 
+                        key={idx} 
+                        className="bg-primary text-white px-3 py-1"
                       >
-                        Add Specialization
+                        {spec}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  {isEditing && (
+                    <div className="flex items-center gap-2 mt-4">
+                      <Input
+                        placeholder="Add specialization..."
+                        className="w-full max-w-xs"
+                        value={newSpec}
+                        onChange={(e) => setNewSpec(e.target.value)}
+                      />
+
+                      <Button
+                        variant="outline"
+                        className="border-secondary/20 text-primary hover:bg-secondary"
+                        onClick={() => {
+                          if (!newSpec.trim()) return;
+
+                          setResearcher(prev => ({
+                            ...prev,
+                            specializations: [...prev.specializations, newSpec.trim()],
+                          }));
+
+                          setNewSpec("");
+                        }}
+                      >
+                        Add
                       </Button>
-                    )}
-                  </CardContent>
+                    </div>
+                  )}
+                </CardContent>
+
                 </Card>
 
                 {/* Funding and Resources Card */}

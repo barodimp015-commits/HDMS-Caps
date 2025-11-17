@@ -19,11 +19,15 @@ import {
   Users,
   Settings,
   User,
+  LogIn,
+  UserPlus,
 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { getDoc } from "firebase/firestore"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import Link from "next/link"
 
 
 interface DashboardLayoutProps {
@@ -31,6 +35,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { user, logout } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
@@ -42,7 +47,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     router.push("/")
   }
 
-const getNavigationItems = () => {
+  const getNavigationItems = () => {
     const baseNavigation = [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { name: "Specimens", href: "/specimens", icon: Database },
@@ -60,7 +65,7 @@ const getNavigationItems = () => {
     } else if (user?.role === "researcher") {
       return [
         ...baseNavigation,
-        { name: "Reports", href: "/researcher/reports", icon: BarChart3 },
+        { name: "Reports", href: "/reports", icon: BarChart3 },
         { name: "About", href: "/about", icon: Info },
       ]
     } else {
@@ -174,7 +179,7 @@ const getNavigationItems = () => {
           <div className="p-4 border-t border-sidebar-border">
             <Button
               variant="ghost"
-              className="w-full justify-start text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground"
+              className="w-full justify-start text-sidebar-foreground hover:bg-primary hover:text-destructive-foreground"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-3" />
@@ -189,6 +194,7 @@ const getNavigationItems = () => {
         {/* Top bar */}
         <header className="bg-card border-b border-border sticky top-0 z-30">
           <div className="flex items-center justify-between px-8 py-4">
+
             <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSidebarOpen(true)}>
               <Menu className="h-5 w-5" />
             </Button>
@@ -206,24 +212,50 @@ const getNavigationItems = () => {
             </div>
             <div className="relative flex items-center gap-4">
             <span className="text-sm font-semibold capitalize">{user.firstName} {user.lastName}</span>
-             <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden cursor-pointer">
-                {profilePhoto ? (
-                  <div className="h-8 w-8 relative rounded-full overflow-hidden">
-                    <Image
-                      src={profilePhoto}
-                      alt="Profile Photo"
-                      fill
-                      unoptimized={profilePhoto.startsWith("data:")}
-                      className="object-cover rounded-full"
-                    />
+                      <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden cursor-pointer">
+                    {profilePhoto ? (
+                      <div className="h-8 w-8 relative rounded-full overflow-hidden">
+                        <Image
+                          src={profilePhoto}
+                          alt="Profile Photo"
+                          fill
+                          unoptimized={profilePhoto.startsWith("data:")}
+                          className="object-cover rounded-full"
+                        />
+                      </div>
+                    ) : (
+                      <User className="h-4 w-4 text-white" />
+                    )}
                   </div>
-                ) : (
-                  <User className="h-4 w-4 text-white" />
-                )}
-              </div>
-              
-              </div>
+              </DropdownMenuTrigger>
 
+              <DropdownMenuContent className="w-48" align="end" sideOffset={8}>
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/researcher/profile" className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+
+                  
+                  </>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+              <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
         </header>
 

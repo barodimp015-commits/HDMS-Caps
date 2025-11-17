@@ -13,15 +13,26 @@ export interface User {
 }
 
 
-export interface Researcher extends User {
+export interface ResearcherData {
+  id: string
+  firstName: string
+  lastName: string
+  profilePhoto?: string
+  title?: string
   department?: string
-  specialization?: string
+  institution?: string
+  email: string
   phone?: string
-  address?: string
-  role: "researcher"
-  updatedAt: string
+  researcherId?: string
+  joinDate?: string
+  bio?: string
+  specializations: string[]
+  publicationCount?: number
+  herbariaSamples?: number
+  collaborators?: number
+  activeFunding?: string
+  researchFocus?: string
 }
-
 
 export interface Admin extends User {
   department?: string
