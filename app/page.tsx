@@ -9,7 +9,6 @@ export default async function LandingPage() {
     const roles: Record<string, string> = {
       admin: "/admin",
       researcher: "/researcher",
-      guest: "/visitor",
     }
 
     redirect(roles[user.role] || "/visitor")

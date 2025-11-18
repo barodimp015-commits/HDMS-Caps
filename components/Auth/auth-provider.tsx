@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { auth, db } from "@/config/firebase"
-import {User} from '@/model/user'
+import {Userdata} from '@/model/user'
 
 import {
   signInWithEmailAndPassword,
@@ -18,7 +18,7 @@ import { toast } from "sonner"
 
 
 interface AuthContextType {
-  user: User | null
+  user: Userdata | null
   login: (email: string, password: string) => Promise<boolean>
   register: (data: {
     email: string
@@ -35,7 +35,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<Userdata | null>(null)
 
   // Load user on mount
   useEffect(() => {
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   // Save user helper
-  const saveUser = (u: User | null) => {
+  const saveUser = (u: Userdata | null) => {
     setUser(u)
     if (u) {
       localStorage.setItem("hdms-user", JSON.stringify(u))
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const snap = await getDoc(doc(db, "users", fbUser.uid))
       if (snap.exists()) {
         const data = snap.data()
-        const userObj: User = {
+        const userObj: Userdata = {
           id: fbUser.uid,
           email: fbUser.email!,
           role: data.role,
@@ -106,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = snap.data()
 
-      const userObj: User = {
+      const userObj: Userdata = {
         id: fbUser.uid,
         email: fbUser.email!,
         role: data.role,
@@ -140,7 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { user: fbUser } = await createUserWithEmailAndPassword(auth, email, password)
 
       // Create Firestore document
-      const userDoc: User = {
+      const userDoc: Userdata = {
         id: fbUser.uid,
         email,
         role,

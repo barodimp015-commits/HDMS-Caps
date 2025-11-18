@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 import {
   Leaf,
@@ -43,7 +44,7 @@ export default function LandingPageClient() {
 
           <div className="flex items-center space-x-4">
             <Button onClick={() => setShowRegisterModal(true)} variant="outline">
-              Register
+              Sign up
             </Button>
             <Button onClick={() => setShowLoginModal(true)} variant="default">
               Login
@@ -53,59 +54,77 @@ export default function LandingPageClient() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <div className="absolute inset-0 opacity-10"></div>
-        <div className="relative container mx-auto text-center max-w-4xl">
-          <div className="mb-8">
-            <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full mb-6">
-              <Leaf className="h-12 w-12 text-primary" />
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold font-sans text-foreground mb-6">
-              MSU Herbarium Data Management System
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 font-sans">
-              Digitizing plant specimens for research, conservation, and education.
-            </p>
-          </div>
+ <section className="relative py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+  <div className="absolute inset-0 opacity-10"></div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button
-              onClick={() => setShowLoginModal(true)}
-              size="lg"
-              className="text-lg px-8 py-6"
-            >
-              Get Started
-            </Button>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardContent className="p-6 text-center">
-                <Database className="h-8 w-8 text-primary mx-auto mb-2" />
-                <div className="text-2xl font-bold font-sans">5,000+</div>
-                <div className="text-sm text-muted-foreground">Specimens</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardContent className="p-6 text-center">
-                <Leaf className="h-8 w-8 text-secondary mx-auto mb-2" />
-                <div className="text-2xl font-bold font-sans">150+</div>
-                <div className="text-sm text-muted-foreground">Plant Families</div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardContent className="p-6 text-center">
-                <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
-                <div className="text-2xl font-bold font-sans">25+</div>
-                <div className="text-sm text-muted-foreground">Locations</div>
-              </CardContent>
-            </Card>
-          </div>
+  <div className="relative container mx-auto max-w-6xl flex flex-col md:flex-row items-center gap-10">
+    
+    {/* LEFT CONTENT */}
+    <div className="flex-1 text-center md:text-left">
+      <div className="mb-8">
+        <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full mb-6">
+          <Leaf className="h-12 w-12 text-primary" />
         </div>
-      </section>
+
+        <h1 className="text-4xl md:text-6xl font-bold font-sans text-foreground mb-6">
+          MSU Herbarium Data Management System
+        </h1>
+
+        <p className="text-xl md:text-2xl text-muted-foreground mb-8 font-sans">
+          Digitizing plant specimens for research, conservation, and education.
+        </p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-12">
+        <Button onClick={() => setShowLoginModal(true)} size="lg" className="text-lg px-8 py-6">
+          SIGN UP
+        </Button>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl md:max-w-none mx-auto md:mx-0">
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-6 text-center">
+            <Database className="h-8 w-8 text-primary mx-auto mb-2" />
+            <div className="text-2xl font-bold font-sans">5,000+</div>
+            <div className="text-sm text-muted-foreground">Specimens</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-6 text-center">
+            <Leaf className="h-8 w-8 text-secondary mx-auto mb-2" />
+            <div className="text-2xl font-bold font-sans">150+</div>
+            <div className="text-sm text-muted-foreground">Plant Families</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <CardContent className="p-6 text-center">
+            <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
+            <div className="text-2xl font-bold font-sans">25+</div>
+            <div className="text-sm text-muted-foreground">Locations</div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+
+    {/* RIGHT IMAGE */}
+    <div className="flex-1 flex justify-center md:justify-end">
+             <Image
+              src="/asset/MSU.jpg"
+              alt="MSU Illustration"
+              width={700}
+              height={700}
+              className="rounded-2xl shadow-xl object-cover"
+              priority
+            />
+
+    </div>
+
+  </div>
+</section>
+
 
       {/* Features Section */}
       <section className="py-20 px-4 bg-muted/30">
@@ -192,12 +211,14 @@ export default function LandingPageClient() {
 
           <div className="prose prose-lg max-w-none text-muted-foreground space-y-6">
             <p>
-              The MSU Herbarium contains one of the most comprehensive plant
-              collections in Mindanao.
+             The Mindanao State University Herbarium serves as a vital repository of botanical knowledge, preserving
+                plant specimens for scientific research, education, and conservation efforts. Our mission is to digitize
+                and make accessible one of the most comprehensive plant collections in the Great Lakes region.
             </p>
             <p>
-              Our digital system preserves invaluable scientific specimens
-              while making them accessible for research.
+                  Through innovative digital management systems, we bridge the gap between traditional botanical
+                collections and modern research needs, supporting biodiversity studies, climate change research, and
+                conservation planning.
             </p>
           </div>
         </div>

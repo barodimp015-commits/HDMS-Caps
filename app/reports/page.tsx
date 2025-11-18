@@ -172,22 +172,6 @@ export default function ReportsPage() {
     return null
   }
 
-  if (user.role === "guest") {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <BarChart3 className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-foreground mb-2">Reports Access Restricted</h2>
-            <p className="text-muted-foreground mb-4">
-              Please log in as a researcher or administrator to view reports.
-            </p>
-            <Button onClick={() => (window.location.href = "/login")}>Login</Button>
-          </div>
-        </div>
-      </DashboardLayout>
-    )
-  }
 
   return (
     <DashboardLayout>

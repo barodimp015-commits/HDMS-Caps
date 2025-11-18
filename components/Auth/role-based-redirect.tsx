@@ -39,7 +39,6 @@ export function RoleBasedRedirect({
       const roleRedirects: Record<string, string> = {
         admin: "/admin",
         researcher: "/researcher",
-        guest: "/visitor",
       }
 
       const target = redirectTo || roleRedirects[user.role] || "/"

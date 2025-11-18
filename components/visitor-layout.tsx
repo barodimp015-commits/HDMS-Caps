@@ -9,8 +9,9 @@ export function VisitorLayout({ children }: VisitorLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       <VisitorNavbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
-
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </main>
       <footer className="border-t bg-muted/50 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

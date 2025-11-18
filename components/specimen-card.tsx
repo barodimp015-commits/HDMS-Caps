@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { Specimen } from "@/lib/mock-data"
-import type { UserRole } from "@/components/Auth/auth-provider"
+import type { UserRole } from "@/model/user"
 import { MapPin, Calendar, User, Edit, Trash2, Eye, Bookmark } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -27,11 +27,11 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
   }, [specimen.id])
 
   const handleView = () => {
-    router.push(`/specimens/${specimen.id}`)
+    router.push(`/researcher/specimens/${specimen.id}`)
   }
 
   const handleEdit = () => {
-    router.push(`/specimens/${specimen.id}/edit`)
+    router.push(`/researcher/specimens/${specimen.id}/edit`)
   }
 
   const handleDelete = () => {
@@ -121,7 +121,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
                   <span className="font-medium">{specimen.family}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {userRole !== "guest" && (
+                  {userRole == "researcher" && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -174,7 +174,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
           <div className="absolute top-2 right-2">
             <Badge className={getStatusColor(specimen.conservationStatus)}>{specimen.conservationStatus}</Badge>
           </div>
-          {userRole !== "guest" && (
+          {userRole == "researcher" && (
             <Button
               variant="ghost"
               size="sm"

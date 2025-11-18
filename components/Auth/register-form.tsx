@@ -29,7 +29,7 @@ export function RegisterForm({ open, onOpenChange }: RegisterModalProps) {
     password: "",
     confirmPassword: "",
     agreeToTerms: false,
-    role: "guest",
+    role: "researcher",
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -52,7 +52,7 @@ export function RegisterForm({ open, onOpenChange }: RegisterModalProps) {
       password: "",
       confirmPassword: "",
       agreeToTerms: false,
-      role: "guest",
+      role: "researher",
     })
     setError("")
     setShowPassword(false)

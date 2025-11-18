@@ -8,7 +8,7 @@ export default function VisitorLayoutWrapper({
   children: React.ReactNode
 }) {
   return (
-       <RoleBasedRedirect allowedRoles={["guest"]}>
+       <RoleBasedRedirect allowedRoles={["researcher"]}>
         <VisitorLayout>{children}</VisitorLayout>
       </RoleBasedRedirect>
   )

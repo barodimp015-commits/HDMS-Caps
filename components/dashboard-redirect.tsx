@@ -4,21 +4,20 @@ import { useAuth } from "@/components/Auth/auth-provider"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
+type UserRole = "admin" | "researcher"
+
 export function DashboardRedirect() {
   const { user } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
     if (user) {
-      const roleRedirects = {
+      const roleRedirects: Record<UserRole, string> = {
         admin: "/admin",
         researcher: "/researcher",
-        guest: "/visitor",
       }
-     
-    
 
-      router.push(roleRedirects[user.role])
+      router.push(roleRedirects[user.role as UserRole])
     }
   }, [user, router])
 

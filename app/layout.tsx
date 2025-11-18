@@ -40,7 +40,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
       <body className="font-dm-sans">
-        <AuthProvider>{children}
+        <AuthProvider>
+          {children}
            <Toaster position="bottom-right" richColors />
         </AuthProvider>
       </body>

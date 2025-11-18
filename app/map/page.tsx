@@ -71,7 +71,7 @@ export default function MapPage() {
   const selectedSpecimenData = selectedSpecimen ? mockSpecimens.find((s) => s.id === selectedSpecimen) : null
 
   return (
-    <DashboardLayout>
+   
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -248,40 +248,8 @@ export default function MapPage() {
           </div>
         </div>
 
-        {/* Map Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold font-space-grotesk text-foreground">{filteredSpecimens.length}</div>
-              <div className="text-sm text-muted-foreground">Specimens Shown</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold font-space-grotesk text-foreground">
-                {new Set(filteredSpecimens.map((s) => s.location.county)).size}
-              </div>
-              <div className="text-sm text-muted-foreground">Counties</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold font-space-grotesk text-foreground">
-                {new Set(filteredSpecimens.map((s) => s.family)).size}
-              </div>
-              <div className="text-sm text-muted-foreground">Families</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-border">
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold font-space-grotesk text-foreground">
-                {new Set(filteredSpecimens.map((s) => s.collector)).size}
-              </div>
-              <div className="text-sm text-muted-foreground">Collectors</div>
-            </CardContent>
-          </Card>
-        </div>
+    
       </div>
-    </DashboardLayout>
+    
   )
 }

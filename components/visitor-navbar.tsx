@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Search, Menu, X, Leaf, Database, MapPin, BookOpen, Info, LogIn, User, ChevronDown, UserPlus, LogOut, Settings } from "lucide-react"
+import { Search, Menu, X, Leaf, Database, MapPin, BookOpen, Info, LogIn, User, ChevronDown, UserPlus, LogOut, Settings, Home } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import Image from "next/image"
 // Import AuthProvider hook
@@ -19,9 +19,10 @@ export function VisitorNavbar() {
     const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
 
   const navItems = [
-    { href: "/visitor/specimens", label: "Browse Specimens", icon: Database },
-    { href: "/visitor/map", label: "Explore Map", icon: MapPin },
-    { href: "/visitor/bookmarks", label: "My Bookmarks", icon: BookOpen },
+    { href: "/researcher", label: "home", icon: Home },
+    { href: "/researcher/specimens", label: "Browse Specimens", icon: Database },
+    { href: "/researcher/map", label: "Explore Map", icon: MapPin },
+    { href: "/researcher/bookmarks", label: "My Bookmarks", icon: BookOpen },
     { href: "/about", label: "About", icon: Info },
   ]
 
@@ -55,7 +56,7 @@ export function VisitorNavbar() {
                 <Leaf className="h-8 w-8 text-primary" />
                 <div className="hidden sm:block">
                   <h1 className="text-xl font-bold">MSU Herbarium</h1>
-                  <p className="text-xs text-muted-foreground">Guest Access</p>
+           
                 </div>
               </Link>
             </div>
@@ -84,7 +85,7 @@ export function VisitorNavbar() {
                 </div>
               </div>
                 <Badge variant="outline" className="hidden sm:flex ">
-                  Guest Mode
+                  Researcher
                 </Badge>
 
             <DropdownMenu>
@@ -110,14 +111,14 @@ export function VisitorNavbar() {
                 {user ? (
                   <>
                     <DropdownMenuItem asChild>
-                      <Link href="/profile" className="flex items-center gap-2">
+                      <Link href="/researcher/profile" className="flex items-center gap-2">
                         <User className="h-4 w-4" />
                         Profile
                       </Link>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem asChild>
-                      <Link href="/settings" className="flex items-center gap-2">
+                      <Link href="/researcher/settings" className="flex items-center gap-2">
                         <Settings className="h-4 w-4" />
                         Settings
                       </Link>

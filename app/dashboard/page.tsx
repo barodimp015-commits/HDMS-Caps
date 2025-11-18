@@ -49,13 +49,7 @@ export default function DashboardPage() {
       "Bookmark favorite specimens",
       "Download specimen data",
     ],
-    guest: [
-      "Browse public specimen records",
-      "View basic specimen information",
-      "Search and filter specimens",
-      "View specimen locations on map",
-      "Bookmark specimens locally",
-    ],
+
   }
 
   const getQuickActions = () => {
