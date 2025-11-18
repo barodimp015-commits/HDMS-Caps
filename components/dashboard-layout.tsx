@@ -101,7 +101,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   fetchUserData()
 }, [user])
 
-  console.log("Photo:",user.profilePhoto)
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile sidebar backdrop */}

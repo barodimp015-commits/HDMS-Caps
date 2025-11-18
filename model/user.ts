@@ -5,7 +5,7 @@ export interface User {
   firstName?: string
   lastName?: string
   email: string
-   role: string
+  role: string
   createdAt: string
   status?: string | null
   lastLogin?: string | null

@@ -15,6 +15,8 @@ export function DashboardRedirect() {
         researcher: "/researcher",
         guest: "/visitor",
       }
+     
+    
 
       router.push(roleRedirects[user.role])
     }

@@ -10,9 +10,9 @@ export default function ResearcherLayout({
 }) {
   return (
     <RoleBasedRedirect allowedRoles={["researcher"]}>
-      <SidebarProvider>
+  {    <SidebarProvider>
       <DashboardLayout>{children}</DashboardLayout>
-      </SidebarProvider>
+      </SidebarProvider>}
     </RoleBasedRedirect>
   )
 }
