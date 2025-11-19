@@ -19,7 +19,7 @@ export function VisitorNavbar() {
     const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
 
   const navItems = [
-    { href: "/researcher", label: "home", icon: Home },
+    { href: "/feeds", label: "home", icon: Home },
     { href: "/researcher/specimens", label: "Browse Specimens", icon: Database },
     { href: "/researcher/map", label: "Explore Map", icon: MapPin },
     { href: "/researcher/bookmarks", label: "My Bookmarks", icon: BookOpen },

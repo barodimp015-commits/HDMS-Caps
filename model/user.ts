@@ -1,11 +1,11 @@
 export type UserRole = "admin" | "researcher" 
 
-export interface User {
+export interface Userdata {
   id: string
   firstName?: string
   lastName?: string
   email: string
-  role: string
+  role: UserRole
   createdAt: string
   status?: string | null
   lastLogin?: string | null
@@ -34,11 +34,11 @@ export interface ResearcherData {
   researchFocus?: string
 }
 
-export interface Admin extends User {
+export interface Admin extends Userdata {
   department?: string
   specialization?: string
   phone?: string
   address?: string
-  role: "Admin"
+  role: UserRole
   updatedAt: string
 }

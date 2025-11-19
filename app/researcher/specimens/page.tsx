@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/Auth/auth-provider"
 import { mockSpecimens } from "@/lib/mock-data"
 import { Search, Filter, Plus, Grid, List, SortAsc, SortDesc } from "lucide-react"
+import { UserRole } from "@/model/user"
+import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context"
+import { useRouter } from "next/navigation"
 
 type ViewMode = "grid" | "list"
 type SortField = "scientificName" | "commonName" | "collectionDate" | "location"
@@ -18,6 +21,7 @@ type SortOrder = "asc" | "desc"
 
 export default function SpecimensPage() {
   const { user } = useAuth()
+    const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFamily, setSelectedFamily] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
@@ -88,6 +92,8 @@ export default function SpecimensPage() {
 
   const handleAddSpecimen = () => {
     // TODO: Implement add specimen functionality
+    
+     router.push(`/researcher/specimens/new`)
     console.log("Add specimen clicked")
   }
 

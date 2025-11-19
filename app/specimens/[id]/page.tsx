@@ -142,7 +142,7 @@ export default function SpecimenDetailsPage() {
             Back to Catalog
           </Button>
           <div className="flex items-center gap-2">
-            {user.role !== "guest" && (
+        
               <>
                 <Button variant="outline" onClick={handleBookmark} className="flex items-center gap-2 bg-transparent">
                   {isBookmarked ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
@@ -157,7 +157,7 @@ export default function SpecimenDetailsPage() {
                   Share
                 </Button>
               </>
-            )}
+   
             {user.role === "admin" && (
               <Button onClick={handleEdit} className="flex items-center gap-2">
                 <Edit className="h-4 w-4" />

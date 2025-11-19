@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { auth, db } from "@/config/firebase"
-import {Userdata} from '@/model/user'
+import {Userdata, UserRole} from '@/model/user'
+import { useRouter } from "next/navigation"
 
 import {
   signInWithEmailAndPassword,
@@ -23,7 +24,7 @@ interface AuthContextType {
   register: (data: {
     email: string
     password: string
-    role: string
+    role: UserRole
     firstName?: string
     lastName?: string
     createdAt: string
@@ -36,6 +37,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<Userdata | null>(null)
+const router = useRouter()
 
   // Load user on mount
   useEffect(() => {
@@ -129,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = async (data: {
     email: string
     password: string
-    role: string
+    role: UserRole
     firstName?: string
     lastName?: string
     createdAt: string
@@ -166,12 +168,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Logout
-  const logout = async () => {
-    await signOut(auth)
-    saveUser(null)
-    toast.success("Logged out")
-  }
+const logout = async () => {
+  await signOut(auth)
+  saveUser(null)
+
+  toast.success("Logged out")
+
+  router.push("/")   // ✅ Redirect to home page
+}
 
   return (
     <AuthContext.Provider
