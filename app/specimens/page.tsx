@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/Auth/auth-provider"
 import { mockSpecimens } from "@/lib/mock-data"
+
 import { Search, Filter, Plus, Grid, List, SortAsc, SortDesc } from "lucide-react"
 
 type ViewMode = "grid" | "list"
@@ -96,8 +97,9 @@ export default function SpecimensPage() {
   }
 
   return (
-    
-      <div className="space-y-6">
+     <DashboardLayout>
+
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -304,5 +306,7 @@ export default function SpecimensPage() {
           </div>
         )}
       </div>
+     </DashboardLayout>
+
   )
 }

@@ -71,7 +71,7 @@ export default function MapPage() {
   const selectedSpecimenData = selectedSpecimen ? mockSpecimens.find((s) => s.id === selectedSpecimen) : null
 
   return (
-   
+   <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -250,6 +250,6 @@ export default function MapPage() {
 
     
       </div>
-    
+    </DashboardLayout>
   )
 }
