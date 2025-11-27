@@ -160,8 +160,8 @@ export default function ResearchFeed() {
           {['All', 'Genetics', 'Methods', 'Computational Biology', 'Results'].map(cat => (
             <Badge
               key={cat}
-              variant={cat === 'All' ? 'default' : 'secondary'}
-              className="whitespace-nowrap cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-700 transition"
+              variant={cat === 'All' ? 'default' : 'outline'}
+              className="whitespace-nowrap cursor-pointer hover:text-white hover:bg-secondary dark:hover:bg-secondary transition"
             >
               {cat}
             </Badge>
