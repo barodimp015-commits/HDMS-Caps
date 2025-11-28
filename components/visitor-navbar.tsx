@@ -19,7 +19,7 @@ export function VisitorNavbar() {
     const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
 
   const navItems = [
-    { href: "/feeds", label: "home", icon: Home },
+    { href: "/researcher", label: "home", icon: Home },
     { href: "/researcher/specimens", label: "Browse Specimens", icon: Database },
     { href: "/researcher/map", label: "Explore Map", icon: MapPin },
     { href: "/researcher/bookmarks", label: "My Bookmarks", icon: BookOpen },
@@ -52,7 +52,7 @@ export function VisitorNavbar() {
         <div className="max-w-7x2 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link href="/visitor" className="flex items-center space-x-2">
+              <Link href="/researcher" className="flex items-center space-x-2">
                 <Leaf className="h-8 w-8 text-primary" />
                 <div className="hidden sm:block">
                   <h1 className="text-xl font-bold">MSU Herbarium</h1>

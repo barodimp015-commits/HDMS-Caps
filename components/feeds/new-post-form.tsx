@@ -37,7 +37,7 @@ export default function NewPostForm({ onSubmit }: Props) {
 
   if (!isOpen) {
     return (
-      <Card className="border-blue-200 dark:border-primary bg-gradient-to-r from-blue-50 to-teal-50 dark:from-primary dark:to-teal-950">
+      <Card className="border-gray-200 dark:border-gray-200 ">
         <CardContent className="p-4">
           <div className="flex gap-3 items-center cursor-pointer" onClick={() => setIsOpen(true)}>
             <Avatar className="h-10 w-10">
@@ -55,7 +55,7 @@ export default function NewPostForm({ onSubmit }: Props) {
   }
 
   return (
-    <Card className="border-blue-200 dark:border-blue-900 bg-white dark:bg-slate-950">
+     <Card className="border-gray-200 dark:border-gray-200 ">
       <CardContent className="p-6 space-y-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Create a new post</h3>
@@ -112,7 +112,7 @@ export default function NewPostForm({ onSubmit }: Props) {
           <Button
             onClick={handleSubmit}
             disabled={!title.trim() || !content.trim()}
-            className="bg-primary  text-white"
+            className="bg-green-700  text-white"
           >
             <Send className="h-4 w-4 mr-2" />
             Post

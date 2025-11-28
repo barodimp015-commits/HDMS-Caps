@@ -44,8 +44,7 @@ export function LoginForm({ open, onOpenChange, onForgotPasswordClick }: LoginMo
         const storedUser = localStorage.getItem("hdms-user")
         const user = storedUser ? JSON.parse(storedUser) : null
         if (user?.role === "admin") router.push("/admin")
-        else if (user?.role === "researcher") router.push("/researcher")
-        else router.push("/visitor")
+        else router.push("/researcher")
       } else {
         setError("Invalid email or password")
       }

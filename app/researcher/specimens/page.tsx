@@ -90,12 +90,7 @@ export default function SpecimensPage() {
     return filtered
   }, [searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
 
-  const handleAddSpecimen = () => {
-    // TODO: Implement add specimen functionality
-    
-     router.push(`/researcher/specimens/new`)
-    console.log("Add specimen clicked")
-  }
+
 
   if (!user) {
     return null
@@ -112,11 +107,7 @@ export default function SpecimensPage() {
               Browse and search through {mockSpecimens.length} digitized plant specimens
             </p>
           </div>
-     
-            <Button onClick={handleAddSpecimen} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Specimen
-            </Button>
+    
 
         </div>
 

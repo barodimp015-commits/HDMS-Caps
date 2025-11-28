@@ -103,17 +103,17 @@ export default function AddSpecimenForm() {
       <div className="grid sm:grid-cols-3 gap-6">
         <div>
           <label className="text-sm font-medium">Country</label>
-          <Input name="country" value={country} onChange={(e) => setCountry(e.target.value)}   placeholder={country}/>
+          <Input name="country" value={country} onChange={(e) => setCountry(e.target.value)}   placeholder={country} disabled/>
         </div>
 
         <div>
           <label className="text-sm font-medium">Province </label>
-          <Input name="state" value={province} onChange={(e) => setProvince(e.target.value)}  placeholder={province}/>
+          <Input name="state" value={province} onChange={(e) => setProvince(e.target.value)}  placeholder={province} disabled/>
         </div>
 
         <div>
           <label className="text-sm font-medium">City / Municipality</label>
-          <Input name="county" value={city} onChange={(e) => setCity(e.target.value)}  placeholder={city}/>
+          <Input name="county" value={city} onChange={(e) => setCity(e.target.value)}  placeholder={city }disabled/>
         </div>
       </div>
 
@@ -206,7 +206,7 @@ export default function AddSpecimenForm() {
 
       {/* Actions */}
       <div className="flex justify-end gap-3">
-        <Button type="button" variant="outline" onClick={() => router.push("/specimens")}>
+        <Button type="button" variant="outline" onClick={() =>  router.back()}>
           Cancel
         </Button>
 
