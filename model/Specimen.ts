@@ -1,5 +1,6 @@
+export type specimenStatus = "Least Concern" | "Near Threatened" | "Vulnerable" | "Endangered" | "Critically Endangered"
+
 export interface Specimen {
-  id: string
   scientificName: string
   commonName: string
   family: string
@@ -16,8 +17,8 @@ export interface Specimen {
     }
   }
   habitat: string
-  conservationStatus: "Least Concern" | "Near Threatened" | "Vulnerable" | "Endangered" | "Critically Endangered"
-  images: string[]
+  conservationStatus: string,
+  imageUrl: string
   notes: string
   catalogNumber: string
 }

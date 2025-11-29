@@ -16,145 +16,253 @@ import { ArrowLeft, ImageIcon } from "lucide-react"
 import { InteractiveMap } from "@/components/interactive-map"
 import { reverseGeocode } from "@/lib/geocode"
 import { useRouter } from "next/navigation"
+import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
+import { AddNewSpecimen } from "@/lib/herbarium"
 
 export default function AddSpecimenForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [formError, setFormError] = useState("")
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
-  // Geolocation form fields
-  const [country, setCountry] = useState("")
-  const [province, setProvince] = useState("")
-  const [city, setCity] = useState("")
-  const [lat, setLat] = useState<number | null>(null)
-  const [lng, setLng] = useState<number | null>(null)
+  const [formData, setFormData] = useState({
+    scientificName: "",
+    commonName: "",
+    family: "",
+    genus: "",
+    collector: "",
+    collectionDate: "",
+    location: {
+      country: "",
+      state: "",
+      county: "",
+      coordinates: {
+        lat: 0,
+        lng: 0,
+      },
+    },
+    habitat: "",
+    conservationStatus: "",
+    imageUrl: "",
+    notes: "",
+    catalogNumber: "",
+  })
 
-  // Image preview
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) {
-      setPreview(null)
-      return
-    }
-    const url = URL.createObjectURL(file)
-    setPreview(url)
+  const handleChange = (field: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    if (formError) setFormError("")
   }
 
-  // Map location selected
-  const handleLocationPick = async (lat: number, lng: number) => {
-    setLat(lat)
-    setLng(lng)
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
 
+    if (!formData.catalogNumber.trim()) newErrors.catalogNumber = "Catalog number is required"
+    if (!formData.scientificName.trim()) newErrors.scientificName = "Scientific name is required"
+    if (!formData.commonName.trim()) newErrors.commonName = "Common name is required"
+    if (!formData.family.trim()) newErrors.family = "Family is required"
+    if (!formData.genus.trim()) newErrors.genus = "Genus is required"
+    if (!formData.collector.trim()) newErrors.collector = "Collector name is required"
+    if (!formData.collectionDate.trim()) newErrors.collectionDate = "Collection date is required"
+    if (!formData.habitat.trim()) newErrors.habitat = "Habitat is required"
+    if (!formData.conservationStatus) newErrors.conservationStatus = "Conservation status is required"
+
+    if (!formData.location.country.trim()) newErrors.country = "Country is required"
+    if (!formData.location.state.trim()) newErrors.state = "Province is required"
+    if (!formData.location.county.trim()) newErrors.county = "City is required"
+
+    return newErrors
+  }
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return setPreview(null)
+
+    if (!file.type.startsWith("image/")) return toast.error("Please select an image file")
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be < 5MB")
+
+    setImageFile(file)
+
+    try {
+      const previewUrl = await createImagePreview(file)
+      setPreview(previewUrl)
+    } catch {
+      toast.error("Failed to preview image")
+    }
+  }
+
+  const uploadImage = async () => {
+    if (!imageFile) return null
+
+    try {
+      setUploadingImage(true)
+      const path = await uploadLocalImage(imageFile, "specimen")
+      return path
+    } catch {
+      return null
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
+  const handleLocationPick = async (lat: number, lng: number) => {
     const place = await reverseGeocode(lat, lng)
 
-    setCountry(place.country)
-    setProvince(place.province)
-    setCity(place.city)
+    handleChange("location", {
+      country: place.country,
+      state: place.province,
+      county: place.city,
+      coordinates: { lat, lng },
+    })
 
-    toast.info("Location selected and fields auto-filled.")
-    console.log(country,province,city)
+    toast.info("Location selected & auto-filled.")
   }
 
-
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const formErrors = validateForm()
+    setErrors(formErrors)
+
+
     setLoading(true)
 
-    const formData = new FormData(e.currentTarget)
+    try {
+      let imageUrl = null
 
-    formData.append("lat", lat?.toString() || "")
-    formData.append("lng", lng?.toString() || "")
+      if (imageFile) {
+        toast.info("Uploading image...")
+        imageUrl = await uploadImage()
+      }
 
-    const payload = Object.fromEntries(formData.entries())
-    console.log("Final specimen payload:", payload)
+      const specimenData = {
+        ...formData,
+        imageUrl: imageUrl || "",
+      }
 
-    toast.success("Specimen added successfully!")
-    router.push("/specimens")
+      const id = await AddNewSpecimen(specimenData)
+
+      if (id) {
+        toast.success("Specimen added successfully!")
+        router.push("/researcher/specimens")
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to add specimen")
+    } finally {
+      setLoading(false)
+    }
   }
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 animate-in fade-in duration-300">
-
-      {/* Back Button */}
-      <Button
-        variant="ghost"
-        type="button"
-        className="flex items-center gap-2 -mt-4"
-        onClick={() => router.back()}
-      >
+      <Button variant="ghost" type="button" className="flex items-center gap-2 -mt-4" onClick={() => router.back()}>
         <ArrowLeft className="h-4 w-4" />
         Back to Specimens
       </Button>
 
-      {/* Map Picker */}
+      {/* MAP PICKER */}
       <div className="space-y-3">
         <label className="text-sm font-medium">Choose Specimen Location (Click on Map)</label>
         <div className="rounded-xl overflow-hidden border shadow-sm">
-          <InteractiveMap
-            enablePicking
-            onLocationPick={handleLocationPick}
-          />
+          <InteractiveMap enablePicking onLocationPick={handleLocationPick} />
         </div>
       </div>
 
-      {/* Auto-filled Location Fields */}
+      {/* LOCATION FIELDS */}
       <div className="grid sm:grid-cols-3 gap-6">
         <div>
           <label className="text-sm font-medium">Country</label>
-          <Input name="country" value={country} onChange={(e) => setCountry(e.target.value)}   placeholder={country} disabled/>
+          <Input
+            value={formData.location.country}
+            onChange={(e) =>
+              handleChange("location", { ...formData.location, country: e.target.value })
+            }
+            disabled
+          />
         </div>
 
         <div>
-          <label className="text-sm font-medium">Province </label>
-          <Input name="state" value={province} onChange={(e) => setProvince(e.target.value)}  placeholder={province} disabled/>
+          <label className="text-sm font-medium">Province</label>
+          <Input
+            value={formData.location.state}
+            onChange={(e) =>
+              handleChange("location", { ...formData.location, state: e.target.value })
+            }
+            disabled
+          />
         </div>
 
         <div>
           <label className="text-sm font-medium">City / Municipality</label>
-          <Input name="county" value={city} onChange={(e) => setCity(e.target.value)}  placeholder={city }disabled/>
+          <Input
+            value={formData.location.county}
+            onChange={(e) =>
+              handleChange("location", { ...formData.location, county: e.target.value })
+            }
+            disabled
+          />
         </div>
       </div>
 
-      {/* Hidden coordinates */}
-      <input type="hidden" name="lat" value={lat || ""} />
-      <input type="hidden" name="lng" value={lng || ""} />
-
-      {/* Specimen Details */}
+      {/* SPECIMEN DETAILS */}
       <div className="grid sm:grid-cols-2 gap-6">
-        <div className="space-y-2">
+        <div>
           <label className="text-sm font-medium">Scientific Name</label>
-          <Input name="scientificName" required placeholder="Mangifera indica" />
+          <Input
+            value={formData.scientificName}
+            onChange={(e) => handleChange("scientificName", e.target.value)}
+            placeholder="Mangifera indica"
+          />
         </div>
 
-        <div className="space-y-2">
+        <div>
           <label className="text-sm font-medium">Common Name</label>
-          <Input name="commonName" placeholder="Mango" />
+          <Input
+            value={formData.commonName}
+            onChange={(e) => handleChange("commonName", e.target.value)}
+            placeholder="Mango"
+          />
         </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6">
-        <div className="space-y-2">
+        <div>
           <label className="text-sm font-medium">Family</label>
-          <Input name="family" required placeholder="Anacardiaceae" />
+          <Input
+            value={formData.family}
+            onChange={(e) => handleChange("family", e.target.value)}
+          />
         </div>
 
-        <div className="space-y-2">
+        <div>
           <label className="text-sm font-medium">Genus</label>
-          <Input name="genus" required placeholder="Mangifera" />
+          <Input
+            value={formData.genus}
+            onChange={(e) => handleChange("genus", e.target.value)}
+          />
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div>
         <label className="text-sm font-medium">Collection Date</label>
-        <Input type="date" name="collectionDate" required />
+        <Input
+          type="date"
+          value={formData.collectionDate}
+          onChange={(e) => handleChange("collectionDate", e.target.value)}
+        />
       </div>
 
-      {/* Conservation Status */}
+      {/* CONSERVATION STATUS */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Conservation Status</label>
-        <Select name="conservationStatus">
+        <Select
+          value={formData.conservationStatus}
+          onValueChange={(v) => handleChange("conservationStatus", v)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select status" />
           </SelectTrigger>
@@ -168,19 +276,15 @@ export default function AddSpecimenForm() {
         </Select>
       </div>
 
-      {/* Image Upload */}
+      {/* IMAGE UPLOAD */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Specimen Image</label>
 
         <div className="flex items-center gap-4">
-          <Input type="file" name="image" accept="image/*" onChange={handleImageChange} />
+          <Input type="file" accept="image/*" onChange={handleImageChange} />
 
           {preview ? (
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-24 w-24 rounded-md object-cover border shadow-sm"
-            />
+            <img src={preview} alt="Preview" className="h-24 w-24 rounded-md object-cover border" />
           ) : (
             <div className="h-24 w-24 flex items-center justify-center border rounded-md text-muted-foreground">
               <ImageIcon className="h-8 w-8" />
@@ -188,25 +292,31 @@ export default function AddSpecimenForm() {
           )}
         </div>
       </div>
-          {/* HABITAT */}
+
+      {/* HABITAT */}
       <div>
-      <label>Habitat</label>
-      <Textarea placeholder="Describe habitat..." />
+        <label>Habitat</label>
+        <Textarea
+          value={formData.habitat}
+          onChange={(e) => handleChange("habitat", e.target.value)}
+          placeholder="Describe habitat..."
+        />
       </div>
-      {/* Notes */}
+
+      {/* NOTES */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Additional Notes</label>
         <Textarea
-          name="notes"
+          value={formData.notes}
+          onChange={(e) => handleChange("notes", e.target.value)}
           rows={4}
-          className="resize-none"
           placeholder="Collector info, habitat, condition..."
         />
       </div>
 
-      {/* Actions */}
+      {/* ACTIONS */}
       <div className="flex justify-end gap-3">
-        <Button type="button" variant="outline" onClick={() =>  router.back()}>
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel
         </Button>
 

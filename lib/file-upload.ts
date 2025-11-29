@@ -53,3 +53,33 @@ export async function uploadPhoto(file: File, userId: string) {
     throw new Error("Failed to upload profile photo");
   }
 }
+
+
+export const uploadLocalImage = async (
+  file: File,
+  directory: string = "specimen"
+): Promise<string> => {
+  try {
+    // Create form data to send to the API
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('directory', directory);
+    
+    // Send the file to our API endpoint
+    const response = await fetch('/api/uploadSpecimen', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to upload image');
+    }
+    
+    const data = await response.json();
+    return data.path;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+};
