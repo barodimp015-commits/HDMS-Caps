@@ -24,7 +24,7 @@ interface AuthContextType {
   register: (data: {
     email: string
     password: string
-    role: UserRole
+    role: string
     firstName?: string
     lastName?: string
     createdAt: string
@@ -131,7 +131,7 @@ const router = useRouter()
   const register = async (data: {
     email: string
     password: string
-    role: UserRole
+    role: string
     firstName?: string
     lastName?: string
     createdAt: string

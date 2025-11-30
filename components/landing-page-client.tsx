@@ -76,7 +76,7 @@ export default function LandingPageClient() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-12">
-        <Button onClick={() => setShowLoginModal(true)} size="lg" className="text-lg px-8 py-6">
+        <Button onClick={() => setShowRegisterModal(true)} size="lg" className="text-lg px-8 py-6">
           SIGN UP
         </Button>
       </div>

@@ -10,7 +10,7 @@ export interface Specimen {
   location: {
     country: string
     state: string
-    county: string
+    city: string
     coordinates: {
       lat: number
       lng: number
@@ -20,5 +20,4 @@ export interface Specimen {
   conservationStatus: string,
   imageUrl: string
   notes: string
-  catalogNumber: string
 }

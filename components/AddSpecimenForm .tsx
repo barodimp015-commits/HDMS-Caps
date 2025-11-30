@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
@@ -18,14 +18,27 @@ import { reverseGeocode } from "@/lib/geocode"
 import { useRouter } from "next/navigation"
 import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
 import { AddNewSpecimen } from "@/lib/herbarium"
+import { useAuth } from "./Auth/auth-provider"
+import { db, doc, getDoc } from "@/config/firebase"
 
 export default function AddSpecimenForm() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+    const { user } = useAuth()
   const [formError, setFormError] = useState("")
   const [errors, setErrors] = useState<Record<string, string>>({})
+   
+    useEffect(() => {
+    if (user?.id) {
+      setFormData((prev) => ({ ...prev, researcherId: user.id }))
+    }
+  }, [user])
+
+  
+
 
   const [formData, setFormData] = useState({
+
     scientificName: "",
     commonName: "",
     family: "",
@@ -35,7 +48,7 @@ export default function AddSpecimenForm() {
     location: {
       country: "",
       state: "",
-      county: "",
+      city: "",
       coordinates: {
         lat: 0,
         lng: 0,
@@ -45,7 +58,6 @@ export default function AddSpecimenForm() {
     conservationStatus: "",
     imageUrl: "",
     notes: "",
-    catalogNumber: "",
   })
 
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -57,22 +69,18 @@ export default function AddSpecimenForm() {
     if (formError) setFormError("")
   }
 
+  
+  const errorClass = "border-red-500 focus-visible:ring-red-500"
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.catalogNumber.trim()) newErrors.catalogNumber = "Catalog number is required"
     if (!formData.scientificName.trim()) newErrors.scientificName = "Scientific name is required"
     if (!formData.commonName.trim()) newErrors.commonName = "Common name is required"
     if (!formData.family.trim()) newErrors.family = "Family is required"
     if (!formData.genus.trim()) newErrors.genus = "Genus is required"
-    if (!formData.collector.trim()) newErrors.collector = "Collector name is required"
-    if (!formData.collectionDate.trim()) newErrors.collectionDate = "Collection date is required"
     if (!formData.habitat.trim()) newErrors.habitat = "Habitat is required"
     if (!formData.conservationStatus) newErrors.conservationStatus = "Conservation status is required"
 
-    if (!formData.location.country.trim()) newErrors.country = "Country is required"
-    if (!formData.location.state.trim()) newErrors.state = "Province is required"
-    if (!formData.location.county.trim()) newErrors.county = "City is required"
 
     return newErrors
   }
@@ -114,7 +122,7 @@ export default function AddSpecimenForm() {
     handleChange("location", {
       country: place.country,
       state: place.province,
-      county: place.city,
+      city: place.city,
       coordinates: { lat, lng },
     })
 
@@ -124,8 +132,13 @@ export default function AddSpecimenForm() {
    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    
     const formErrors = validateForm()
     setErrors(formErrors)
+        if (Object.keys(formErrors).length > 0) {
+  console.log("formErrors:", formErrors)
+      return
+    }
 
 
     setLoading(true)
@@ -141,6 +154,8 @@ export default function AddSpecimenForm() {
       const specimenData = {
         ...formData,
         imageUrl: imageUrl || "",
+        researcherId: user?.id ?? null,
+         collector: `${user?.firstName} ${user?.lastName}`
       }
 
       const id = await AddNewSpecimen(specimenData)
@@ -158,8 +173,9 @@ export default function AddSpecimenForm() {
 
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10 animate-in fade-in duration-300">
-      <Button variant="ghost" type="button" className="flex items-center gap-2 -mt-4" onClick={() => router.back()}>
+    <form onSubmit={handleSubmit} className="space-y-10">
+
+      <Button variant="ghost" type="button" onClick={() => router.back()} className="flex items-center gap-2 -mt-4">
         <ArrowLeft className="h-4 w-4" />
         Back to Specimens
       </Button>
@@ -178,33 +194,32 @@ export default function AddSpecimenForm() {
           <label className="text-sm font-medium">Country</label>
           <Input
             value={formData.location.country}
-            onChange={(e) =>
-              handleChange("location", { ...formData.location, country: e.target.value })
-            }
             disabled
+            className={errors.country ? errorClass : ""}
+
+
           />
+          {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
         </div>
 
         <div>
           <label className="text-sm font-medium">Province</label>
           <Input
             value={formData.location.state}
-            onChange={(e) =>
-              handleChange("location", { ...formData.location, state: e.target.value })
-            }
             disabled
+            className={errors.state ? errorClass : ""}
           />
+          {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
         </div>
 
         <div>
           <label className="text-sm font-medium">City / Municipality</label>
           <Input
-            value={formData.location.county}
-            onChange={(e) =>
-              handleChange("location", { ...formData.location, county: e.target.value })
-            }
+            value={formData.location.city}
             disabled
+            className={errors.county ? errorClass : ""}
           />
+          {errors.county && <p className="text-red-500 text-xs mt-1">{errors.county}</p>}
         </div>
       </div>
 
@@ -215,8 +230,9 @@ export default function AddSpecimenForm() {
           <Input
             value={formData.scientificName}
             onChange={(e) => handleChange("scientificName", e.target.value)}
-            placeholder="Mangifera indica"
+            className={errors.scientificName ? errorClass : ""}
           />
+          {errors.scientificName && <p className="text-red-500 text-xs mt-1">{errors.scientificName}</p>}
         </div>
 
         <div>
@@ -224,8 +240,9 @@ export default function AddSpecimenForm() {
           <Input
             value={formData.commonName}
             onChange={(e) => handleChange("commonName", e.target.value)}
-            placeholder="Mango"
+            className={errors.commonName ? errorClass : ""}
           />
+          {errors.commonName && <p className="text-red-500 text-xs mt-1">{errors.commonName}</p>}
         </div>
       </div>
 
@@ -235,7 +252,9 @@ export default function AddSpecimenForm() {
           <Input
             value={formData.family}
             onChange={(e) => handleChange("family", e.target.value)}
+            className={errors.family ? errorClass : ""}
           />
+          {errors.family && <p className="text-red-500 text-xs mt-1">{errors.family}</p>}
         </div>
 
         <div>
@@ -243,7 +262,9 @@ export default function AddSpecimenForm() {
           <Input
             value={formData.genus}
             onChange={(e) => handleChange("genus", e.target.value)}
+            className={errors.genus ? errorClass : ""}
           />
+          {errors.genus && <p className="text-red-500 text-xs mt-1">{errors.genus}</p>}
         </div>
       </div>
 
@@ -253,7 +274,11 @@ export default function AddSpecimenForm() {
           type="date"
           value={formData.collectionDate}
           onChange={(e) => handleChange("collectionDate", e.target.value)}
+          className={errors.collectionDate ? errorClass : ""}
         />
+        {errors.collectionDate && (
+          <p className="text-red-500 text-xs mt-1">{errors.collectionDate}</p>
+        )}
       </div>
 
       {/* CONSERVATION STATUS */}
@@ -263,7 +288,7 @@ export default function AddSpecimenForm() {
           value={formData.conservationStatus}
           onValueChange={(v) => handleChange("conservationStatus", v)}
         >
-          <SelectTrigger>
+          <SelectTrigger className={errors.conservationStatus ? errorClass : ""}>
             <SelectValue placeholder="Select status" />
           </SelectTrigger>
           <SelectContent>
@@ -274,6 +299,9 @@ export default function AddSpecimenForm() {
             <SelectItem value="Critically Endangered">Critically Endangered</SelectItem>
           </SelectContent>
         </Select>
+        {errors.conservationStatus && (
+          <p className="text-red-500 text-xs mt-1">{errors.conservationStatus}</p>
+        )}
       </div>
 
       {/* IMAGE UPLOAD */}
@@ -295,12 +323,14 @@ export default function AddSpecimenForm() {
 
       {/* HABITAT */}
       <div>
-        <label>Habitat</label>
+        <label className="text-sm font-medium">Habitat</label>
         <Textarea
           value={formData.habitat}
           onChange={(e) => handleChange("habitat", e.target.value)}
+          className={errors.habitat ? errorClass : ""}
           placeholder="Describe habitat..."
         />
+        {errors.habitat && <p className="text-red-500 text-xs mt-1">{errors.habitat}</p>}
       </div>
 
       {/* NOTES */}
