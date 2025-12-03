@@ -76,6 +76,7 @@ export async function GetSpecimen(specimenId: string): Promise<Specimen | null> 
   try {
     const specimenRef = doc(db, "specimen", specimenId)
     const snapshot = await getDoc(specimenRef)
+    
 
     if (!snapshot.exists()) return null
 
@@ -88,6 +89,7 @@ export async function GetSpecimen(specimenId: string): Promise<Specimen | null> 
     return null
   }
 }
+
 
 // ---------------------------------
 // DELETE

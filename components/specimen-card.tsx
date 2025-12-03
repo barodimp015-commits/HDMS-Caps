@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { Specimen } from "@/lib/mock-data"
+import type { Specimen } from "@/model/Specimen"
 import type { UserRole } from "@/model/user"
 import { MapPin, Calendar, User, Edit, Trash2, Eye, Bookmark } from "lucide-react"
 import { useState, useEffect } from "react"
@@ -13,7 +13,7 @@ import Image from "next/image"
 interface SpecimenCardProps {
   specimen: Specimen
   viewMode: "grid" | "list"
-  userRole: UserRole
+  userRole: string
 }
 
 export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps) {
@@ -79,7 +79,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
             <div className="flex-shrink-0">
               <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden">
                 <Image
-                  src={specimen.images[0] || "/placeholder.svg"}
+                  src={specimen.imageUrl || "/placeholder.svg"}
                   alt={specimen.commonName}
                   width={96}
                   height={96}
@@ -103,7 +103,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-muted-foreground mb-4">
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  {specimen.location.county}, {specimen.location.state}
+                  {specimen.location.city}, {specimen.location.state}
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
@@ -135,7 +135,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </Button>
-                  {userRole === "admin" && (
+                  {userRole !== "researcher" && (
                     <>
                       <Button variant="outline" size="sm" onClick={handleEdit}>
                         <Edit className="h-4 w-4 mr-1" />
@@ -166,7 +166,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
       <CardHeader className="p-0">
         <div className="relative aspect-[4/3] bg-muted rounded-t-lg overflow-hidden">
           <Image
-            src={specimen.images[0] || "/placeholder.svg"}
+            src={specimen.imageUrl || "/placeholder.svg"}
             alt={specimen.commonName}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-200"
@@ -201,7 +201,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4 flex-shrink-0" />
               <span className="line-clamp-1">
-                {specimen.location.county}, {specimen.location.state}
+                {specimen.location.city}, {specimen.location.state}
               </span>
             </div>
             <div className="flex items-center gap-1">
@@ -224,7 +224,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
               <Eye className="h-4 w-4 mr-1" />
               View
             </Button>
-            {userRole === "admin" && (
+            {userRole !== "researcher" && (
               <>
                 <Button variant="outline" size="sm" onClick={handleEdit}>
                   <Edit className="h-4 w-4" />

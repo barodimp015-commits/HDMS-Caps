@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/Auth/auth-provider"
-import { mockSpecimens, type Specimen } from "@/lib/mock-data"
+import { Specimen } from "@/model/Specimen"
 import {
   ArrowLeft,
   Edit,
@@ -27,6 +27,7 @@ import {
   Share,
 } from "lucide-react"
 import Image from "next/image"
+import { GetSpecimen } from "@/lib/herbarium"
 
 export default function SpecimenDetailsPage() {
   const params = useParams()
@@ -36,16 +37,26 @@ export default function SpecimenDetailsPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isBookmarked, setIsBookmarked] = useState(false)
 
-  useEffect(() => {
-    if (params.id) {
-      const foundSpecimen = mockSpecimens.find((s) => s.id === params.id)
-      setSpecimen(foundSpecimen || null)
+useEffect(() => {
+  const fetchData = async () => {
+    if (!params.id) return;
 
-      // Check if specimen is bookmarked
-      const bookmarks = JSON.parse(localStorage.getItem("hdms-bookmarks") || "[]")
-      setIsBookmarked(bookmarks.includes(params.id))
-    }
-  }, [params.id])
+    // Normalize param to string
+    const specimenId = Array.isArray(params.id) ? params.id[0] : params.id;
+   console.log(specimenId, " ???")
+
+    // Await GetSpecimen() because it returns a Promise<Specimen | null>
+    const foundSpecimen = await GetSpecimen(specimenId);
+    setSpecimen(foundSpecimen || null);
+
+    // Bookmark check
+    const bookmarks = JSON.parse(localStorage.getItem("hdms-bookmarks") || "[]");
+    setIsBookmarked(bookmarks.includes(specimenId));
+  };
+
+  fetchData();
+}, [params.id]);
+
 
   const handleBack = () => {
     router.back()
@@ -85,17 +96,6 @@ export default function SpecimenDetailsPage() {
     }
   }
 
-  const nextImage = () => {
-    if (specimen && specimen.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % specimen.images.length)
-    }
-  }
-
-  const prevImage = () => {
-    if (specimen && specimen.images.length > 1) {
-      setCurrentImageIndex((prev) => (prev - 1 + specimen.images.length) % specimen.images.length)
-    }
-  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -178,58 +178,14 @@ export default function SpecimenDetailsPage() {
                 {/* Main Image */}
                 <div className="relative aspect-[4/3] bg-muted rounded-lg overflow-hidden">
                   <Image
-                    src={specimen.images[currentImageIndex] || "/placeholder.svg"}
+                    src={specimen.imageUrl || "/placeholder.svg"}
                     alt={`${specimen.commonName} - Image ${currentImageIndex + 1}`}
                     fill
                     className="object-cover"
                   />
-                  {specimen.images.length > 1 && (
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={prevImage}
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-background/80 backdrop-blur-sm"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={nextImage}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-background/80 backdrop-blur-sm"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background/80 backdrop-blur-sm rounded-full px-3 py-1 text-sm">
-                        {currentImageIndex + 1} / {specimen.images.length}
-                      </div>
-                    </>
-                  )}
+                 
                 </div>
 
-                {/* Thumbnail Navigation */}
-                {specimen.images.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto">
-                    {specimen.images.map((image, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                          index === currentImageIndex ? "border-primary" : "border-border"
-                        }`}
-                      >
-                        <Image
-                          src={image || "/placeholder.svg"}
-                          alt={`Thumbnail ${index + 1}`}
-                          width={64}
-                          height={64}
-                          className="object-cover"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -289,7 +245,7 @@ export default function SpecimenDetailsPage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Location</p>
                       <p className="font-medium">
-                        {specimen.location.county}, {specimen.location.state}, {specimen.location.country}
+                        {specimen.location.city}, {specimen.location.state}, {specimen.location.country}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {specimen.location.coordinates.lat.toFixed(4)}, {specimen.location.coordinates.lng.toFixed(4)}
@@ -304,7 +260,7 @@ export default function SpecimenDetailsPage() {
                   <FileText className="h-5 w-5 text-secondary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Catalog Number</p>
-                    <p className="font-medium font-mono">{specimen.catalogNumber}</p>
+                    <p className="font-medium font-mono">{specimen.id}</p>
                   </div>
                 </div>
               </CardContent>

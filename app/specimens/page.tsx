@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { SpecimenCard } from "@/components/specimen-card"
 import { Button } from "@/components/ui/button"
@@ -10,8 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/Auth/auth-provider"
 import { mockSpecimens } from "@/lib/mock-data"
+import {doc,getDoc,db} from "@/config/firebase"
+import { GetAllSpecimen } from "@/lib/herbarium"
 
 import { Search, Filter, Plus, Grid, List, SortAsc, SortDesc } from "lucide-react"
+import { Specimen } from "@/model/Specimen"
 
 type ViewMode = "grid" | "list"
 type SortField = "scientificName" | "commonName" | "collectionDate" | "location"
@@ -25,6 +28,31 @@ export default function SpecimensPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
   const [sortField, setSortField] = useState<SortField>("scientificName")
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc")
+  const [Loading,setLoading] = useState(false)
+  const [specimens, setSpecimes] = useState<Specimen[]>([])
+    
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+
+        // Fetch available Specimen
+        const SpecimenData = await GetAllSpecimen ();
+        setSpecimes(SpecimenData);
+        console.log("Specimen Data:", SpecimenData); // Debug log
+      } catch (error) {
+        console.error("Error fetching Specimen data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+
+
+
 
   // Get unique families and conservation statuses for filters
   const families = useMemo(() => {

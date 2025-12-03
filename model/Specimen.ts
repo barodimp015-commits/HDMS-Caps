@@ -1,6 +1,7 @@
 export type specimenStatus = "Least Concern" | "Near Threatened" | "Vulnerable" | "Endangered" | "Critically Endangered"
 
 export interface Specimen {
+  id:string
   scientificName: string
   commonName: string
   family: string

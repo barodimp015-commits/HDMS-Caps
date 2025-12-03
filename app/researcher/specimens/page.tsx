@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { SpecimenCard } from "@/components/specimen-card"
 import { Button } from "@/components/ui/button"
@@ -9,11 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/Auth/auth-provider"
-import { mockSpecimens } from "@/lib/mock-data"
+// import { mockSpecimens } from "@/lib/mock-data"
 import { Search, Filter, Plus, Grid, List, SortAsc, SortDesc } from "lucide-react"
 import { UserRole } from "@/model/user"
-import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context"
 import { useRouter } from "next/navigation"
+import { Specimen } from "@/model/Specimen"
+import { GetAllSpecimen } from "@/lib/herbarium"
+
 
 type ViewMode = "grid" | "list"
 type SortField = "scientificName" | "commonName" | "collectionDate" | "location"
@@ -27,22 +29,45 @@ export default function SpecimensPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
   const [sortField, setSortField] = useState<SortField>("scientificName")
+  const [Loading,setLoading] = useState(false)
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc")
+  const [specimens, setSpecimes] = useState<Specimen[]>([])
+      
+    useEffect(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+  
+          // Fetch available Specimen
+          const SpecimenData = await GetAllSpecimen ();
+          setSpecimes(SpecimenData);
+          console.log("Specimen Data:", SpecimenData); // Debug log
+        } catch (error) {
+          console.error("Error fetching Specimen data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchData();
+    }, [user]);
+  
+  
 
   // Get unique families and conservation statuses for filters
-  const families = useMemo(() => {
-    const uniqueFamilies = Array.from(new Set(mockSpecimens.map((s) => s.family))).sort()
-    return uniqueFamilies
-  }, [])
+const families = useMemo(() => {
+  const uniqueFamilies = Array.from(new Set(specimens.map((s) => s.family))).sort()
+  return uniqueFamilies
+}, [specimens]) // ✅ FIXED
 
-  const conservationStatuses = useMemo(() => {
-    const uniqueStatuses = Array.from(new Set(mockSpecimens.map((s) => s.conservationStatus))).sort()
-    return uniqueStatuses
-  }, [])
+const conservationStatuses = useMemo(() => {
+  const uniqueStatuses = Array.from(new Set(specimens.map((s) => s.conservationStatus))).sort()
+  return uniqueStatuses
+}, [specimens]) // ✅ FIXED
 
   // Filter and sort specimens
   const filteredSpecimens = useMemo(() => {
-    const filtered = mockSpecimens.filter((specimen) => {
+    const filtered = specimens.filter((specimen) => {
       const matchesSearch =
         searchQuery === "" ||
         specimen.scientificName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -74,8 +99,8 @@ export default function SpecimensPage() {
           bValue = new Date(b.collectionDate)
           break
         case "location":
-          aValue = `${a.location.state}, ${a.location.county}`
-          bValue = `${b.location.state}, ${b.location.county}`
+          aValue = `${a.location.state}, ${a.location.city}`
+          bValue = `${b.location.state}, ${b.location.city}`
           break
         default:
           aValue = a.scientificName
@@ -88,7 +113,7 @@ export default function SpecimensPage() {
     })
 
     return filtered
-  }, [searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
+  }, [specimens,searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
 
 
 
@@ -104,7 +129,7 @@ export default function SpecimensPage() {
           <div>
             <h1 className="text-3xl font-bold font-space-grotesk text-foreground">Specimen Catalog</h1>
             <p className="text-muted-foreground">
-              Browse and search through {mockSpecimens.length} digitized plant specimens
+              Browse and search through {specimens.length} digitized plant specimens
             </p>
           </div>
     
@@ -211,7 +236,7 @@ export default function SpecimensPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
-              Showing {filteredSpecimens.length} of {mockSpecimens.length} specimens
+              Showing {filteredSpecimens.length} of {specimens.length} specimens
             </span>
             {(searchQuery || selectedFamily !== "all" || selectedStatus !== "all") && (
               <Button
