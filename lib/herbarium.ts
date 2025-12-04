@@ -8,8 +8,11 @@ import {
   getDocs,
   serverTimestamp,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  query, 
+  where 
 } from "@/config/firebase"
+import { format } from "date-fns"
 
 // ---------------------------------
 // CREATE
@@ -105,3 +108,43 @@ export async function DeleteSpecimen(
     return false
   }
 }
+
+
+export async function GetUserSpecimens(userId: string): Promise<Specimen[]> {
+  try {
+    const specimenRef = collection(db, "specimen")
+    const q = query(specimenRef, where("researcherId", "==", userId))
+    const snapshot = await getDocs(q)
+
+    return snapshot.docs.map((docSnap) => {
+      const data = docSnap.data()
+
+      return {
+        id: docSnap.id,
+        ...data,
+        createdAt: formatYear(data.createdAt), // <--- year only
+      }
+    }) as Specimen[]
+    
+  } catch (error) {
+    console.error("Error fetching user specimens:", error)
+    return []
+  }
+}
+
+  
+const formatYear = (timestamp: any): string => {
+  if (!timestamp?.toDate) return "Unknown"
+
+  return timestamp.toDate().getFullYear().toString()
+}
+
+const formatTimestamp = (timestamp: any): string => {
+    if (!timestamp) return "Unknown"
+    
+    if (timestamp.toDate) {
+      return format(timestamp.toDate(), "MMM d, yyyy")
+    }
+    
+    return "Unknown"
+  }

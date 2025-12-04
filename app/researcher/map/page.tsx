@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { InteractiveMap } from "@/components/interactive-map"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,6 +11,8 @@ import { useAuth } from "@/components/Auth/auth-provider"
 import { mockSpecimens } from "@/lib/mock-data"
 import { MapPin, Filter, Layers, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Specimen } from "@/model/Specimen"
+import { GetAllSpecimen } from "@/lib/herbarium"
 
 export default function MapPage() {
   const { user } = useAuth()
@@ -18,7 +20,30 @@ export default function MapPage() {
   const [selectedFamily, setSelectedFamily] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const [selectedSpecimen, setSelectedSpecimen] = useState<string | null>(null)
+  const [specimens, setSpecimes] = useState<Specimen[]>([])
+  const [Loading,setLoading] = useState(false)
+   
 
+    useEffect(() => {
+        const fetchData = async () => {
+          setLoading(true);
+          try {
+    
+            // Fetch available Specimen
+            const SpecimenData = await GetAllSpecimen ();
+            setSpecimes(SpecimenData);
+            console.log("Specimen Data:", SpecimenData); // Debug log
+          } catch (error) {
+            console.error("Error fetching Specimen data:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchData();
+      }, [user]);
+    
+      
   // Get unique families and conservation statuses for filters
   const families = useMemo(() => {
     const uniqueFamilies = Array.from(new Set(mockSpecimens.map((s) => s.family))).sort()
@@ -32,7 +57,7 @@ export default function MapPage() {
 
   // Filter specimens based on selected filters
   const filteredSpecimens = useMemo(() => {
-    return mockSpecimens.filter((specimen) => {
+    return specimens.filter((specimen) => {
       const matchesFamily = selectedFamily === "all" || specimen.family === selectedFamily
       const matchesStatus = selectedStatus === "all" || specimen.conservationStatus === selectedStatus
       return matchesFamily && matchesStatus
@@ -232,7 +257,7 @@ export default function MapPage() {
               <CardHeader>
                 <CardTitle className="text-lg font-space-grotesk flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
-                  Mindanao Specimen Locations
+                  Specimen Locations
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">

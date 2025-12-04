@@ -80,10 +80,27 @@ useEffect(() => {
     setIsBookmarked(!isBookmarked)
   }
 
-  const handleDownload = () => {
-    // TODO: Implement download functionality
-    console.log("Download specimen data")
-  }
+const handleDownload = () => {
+  if (!specimen) return;
+
+  const content = `
+    <h1>${specimen.scientificName}</h1>
+    <p><b>Common Name:</b> ${specimen.commonName}</p>
+    <p><b>Family:</b> ${specimen.family}</p>
+    <p><b>Genus:</b> ${specimen.genus}</p>
+    <p><b>Collector:</b> ${specimen.collector}</p>
+    <p><b>Date:</b> ${new Date(specimen.collectionDate).toLocaleDateString()}</p>
+    <p><b>Catalog Number:</b> ${specimen.id}</p>
+    <p><b>Location:</b> ${specimen.location.city}, ${specimen.location.state}, ${specimen.location.country}</p>
+    <p><b>Coordinates:</b> ${specimen.location.coordinates.lat}, ${specimen.location.coordinates.lng}</p>
+    <p><b>Habitat:</b> ${specimen.habitat}</p>
+    <p><b>Notes:</b> ${specimen.notes || "None"}</p>
+  `;
+
+  const win = window.open("", "_blank");
+  win!.document.write(content);
+  win!.print();
+};
 
   const handleShare = () => {
     // TODO: Implement share functionality

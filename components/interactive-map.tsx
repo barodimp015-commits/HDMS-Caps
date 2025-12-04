@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { Specimen } from "@/lib/mock-data"
+import type { Specimen } from "@/model/Specimen"
 
 interface InteractiveMapProps {
   specimens?: Specimen[]
@@ -87,7 +87,7 @@ export function InteractiveMap({
     <div
       ref={mapRef}
       className="w-full bg-muted rounded-lg"
-      style={{ minHeight: "400px" }}
+      style={{ minHeight: "600px" }}
     />
   )
 }

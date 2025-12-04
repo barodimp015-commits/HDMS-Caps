@@ -22,8 +22,6 @@ export function VisitorNavbar() {
     { href: "/researcher", label: "home", icon: Home },
     { href: "/researcher/specimens", label: "Browse Specimens", icon: Database },
     { href: "/researcher/map", label: "Explore Map", icon: MapPin },
-    { href: "/researcher/bookmarks", label: "My Bookmarks", icon: BookOpen },
-    { href: "/about", label: "About", icon: Info },
   ]
 
  
@@ -68,7 +66,7 @@ export function VisitorNavbar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors "
                   >
                     <Icon className="h-4 w-4" />
                     <span>{item.label}</span>
@@ -111,24 +109,18 @@ export function VisitorNavbar() {
                 {user ? (
                   <>
                     <DropdownMenuItem asChild>
-                      <Link href="/researcher/profile" className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
+                      <Link href="/researcher/profile" className="flex items-center gap-2 text-primary ">
+                        <User className="h-4 w-4 text-primary focus:text-white" />
                         Profile
                       </Link>
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem asChild>
-                      <Link href="/researcher/settings" className="flex items-center gap-2">
-                        <Settings className="h-4 w-4" />
-                        Settings
-                      </Link>
-                    </DropdownMenuItem>
 
                     <DropdownMenuItem
-                      className="text-red-600 focus:text-red-600"
+                      className="text-primary focus:text-white"
                       onClick={logout}
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-4 w-4 text-primary focus:text-white" />
                       Logout
                     </DropdownMenuItem>
                   </>

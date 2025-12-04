@@ -17,7 +17,8 @@ import { getUserProfile, updateUserProfile } from '@/lib/user'
 import router from 'next/router'
 import { ResearcherData } from '@/model/user'
 import Link from 'next/link'
-
+import { Specimen } from "@/model/Specimen"
+import { GetAllSpecimen, GetUserSpecimens } from "@/lib/herbarium"
 
 
 
@@ -28,15 +29,13 @@ export default function ResearcherProfile() {
   const [isUploading, setIsUploading] = useState(false)
     const [userData, setUserData] = useState<any>(null)
     const [newSpec, setNewSpec] = useState("");
+    const [mySpecimens, setMySpecimens] = useState<Specimen[]>([])
+    const { user } = useAuth()
 
     
-    // Add state for preview data
-  const [previewData, setPreviewData] = useState({
-    photoUrl: "",
-  })
 
-  
-const { user } = useAuth()
+
+
 const [researcher, setResearcher] = useState<ResearcherData>({
   id: "",
   firstName: '',
@@ -57,6 +56,9 @@ const [researcher, setResearcher] = useState<ResearcherData>({
   activeFunding: '',
   researchFocus: '',
 })
+
+
+
 
 
   const [publications] = useState([
@@ -164,11 +166,21 @@ const handleCancel = () => {
     }))
   }
 
-  // Clear preview image if any
-  setPreviewData({ photoUrl: "" })
 
   setIsEditing(false)
 }
+
+useEffect(() => {
+
+
+  async function load() {
+    if (!user) return
+    const data = await GetUserSpecimens(user.id)
+    setMySpecimens(data)
+  }
+
+  load()
+}, [user])
 
 
 useEffect(() => {
@@ -301,9 +313,6 @@ useEffect(() => {
                 </TabsTrigger>
                 <TabsTrigger value="publications" className="data-[state=active]:bg-primary data-[state=active]:text-white">
                   Publications
-                </TabsTrigger>
-                <TabsTrigger value="herbarium" className="data-[state=active]:bg-primary data-[state=active]:text-white">
-                  Herbarium
                 </TabsTrigger>
               </TabsList>
 
@@ -527,35 +536,38 @@ useEffect(() => {
                   <CardHeader className="border-b border-secondary/20">
                     <CardTitle className="text-primary flex items-center gap-2">
                       <BookOpen className="h-5 w-5" />
-                      Publications ({publications.length})
+                      Herbarium Contributions ({mySpecimens.length})
                     </CardTitle>
                     <CardDescription>Your published research and academic works</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-6">
                     <div className="space-y-4">
-                      {publications.map((pub, idx) => (
+                      {mySpecimens.map((spec, idx) => (
                         <div 
                           key={idx}
                           className="p-4 border border-secondary/20 rounded-lg hover:bg-secondary/5 transition-colors"
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-primary mb-1">{pub.title}</h4>
-                              <p className="text-sm text-gray-600">{pub.journal}</p>
+                              <h4 className="font-semibold text-primary mb-1">{spec.commonName } in {spec.location.city }, {spec.location.state }</h4>
+                              <p className="text-sm text-gray-600">{spec.conservationStatus}</p>
                             </div>
                             <Badge variant="outline" className="ml-2 whitespace-nowrap">
-                              {pub.year}
+                              {spec.createdAt}
                             </Badge>
                           </div>
                           <div className="flex items-center gap-4 text-sm text-gray-600 mt-3">
-                            <span>{pub.citations} citations</span>
+                            <span>{spec.scientificName}</span>
+                            <Link href={`/researcher/specimens/${spec.id}`}>
                             <Button 
                               variant="outline" 
                               size="sm"
                               className="border-secondary/20 text-primary hover:bg-secondary/10"
+                              
                             >
                               View
                             </Button>
+                            </Link>
                           </div>
                         </div>
                       ))}
@@ -565,84 +577,7 @@ useEffect(() => {
               </TabsContent>
 
               {/* Herbarium Tab */}
-              <TabsContent value="herbarium" className="space-y-6">
-                <Card className="border-secondary/20">
-                  <CardHeader className="border-b border-secondary/20">
-                    <CardTitle className="text-primary flex items-center gap-2">
-                      <Leaf className="h-5 w-5" />
-                      Herbarium Contributions
-                    </CardTitle>
-                    <CardDescription>Your contributions to the MSU Herbarium collection</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      {herbariumContributions.map((contrib, idx) => (
-                        <div 
-                          key={idx}
-                          className="grid grid-cols-4 gap-4 p-4 border border-secondary/20 rounded-lg hover:bg-secondary/5 transition-colors"
-                        >
-                          <div>
-                            <p className="text-sm text-gray-600 mb-1">Year</p>
-                            <p className="font-bold text-primary text-lg">{contrib.year}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600 mb-1">Specimens</p>
-                            <p className="font-bold text-primary text-lg">{contrib.specimens}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600 mb-1">Families</p>
-                            <p className="font-bold text-primary text-lg">{contrib.families}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600 mb-1">Collection Sites</p>
-                            <p className="font-bold text-primary text-lg">{contrib.sites}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
 
-                {/* Contribution Stats Summary */}
-                <Card className="border-secondary/20">
-                  <CardHeader className="border-b border-secondary/20">
-                    <CardTitle className="text-primary">Contribution Summary</CardTitle>
-                    <CardDescription>Total herbarium contributions and impact metrics</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-4 bg-secondary/5 rounded-lg border border-secondary/20 text-center">
-                        <p className="text-sm text-gray-600 mb-2">Total Specimens</p>
-                        <p className="text-3xl font-bold text-primary">850</p>
-                      </div>
-                      <div className="p-4 bg-secondary/5 rounded-lg border border-secondary/20 text-center">
-                        <p className="text-sm text-gray-600 mb-2">Plant Families</p>
-                        <p className="text-3xl font-bold text-primary">60</p>
-                      </div>
-                      <div className="p-4 bg-secondary/5 rounded-lg border border-secondary/20 text-center">
-                        <p className="text-sm text-gray-600 mb-2">Collection Sites</p>
-                        <p className="text-3xl font-bold text-primary">18</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Upload New Specimens */}
-                <Card className="border-secondary/20">
-                  <CardHeader className="border-b border-secondary/20">
-                    <CardTitle className="text-primary">Submit New Specimens</CardTitle>
-                    <CardDescription>Add digitized specimens to the herbarium collection</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <Link href={'/researcher/specimens/new'} >
-                    <Button className="bg-primary hover:bg-primary/90 text-white w-full">
-                      <Leaf className="h-4 w-4 mr-2" />
-                      Upload Specimens
-                    </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </TabsContent>
             </Tabs>
           </div>
         </div>

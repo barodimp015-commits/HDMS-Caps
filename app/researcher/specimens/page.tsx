@@ -23,7 +23,6 @@ type SortOrder = "asc" | "desc"
 
 export default function SpecimensPage() {
   const { user } = useAuth()
-    const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFamily, setSelectedFamily] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")

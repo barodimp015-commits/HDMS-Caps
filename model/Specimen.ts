@@ -1,3 +1,4 @@
+
 export type specimenStatus = "Least Concern" | "Near Threatened" | "Vulnerable" | "Endangered" | "Critically Endangered"
 
 export interface Specimen {
@@ -21,4 +22,5 @@ export interface Specimen {
   conservationStatus: string,
   imageUrl: string
   notes: string
+  createdAt?: string 
 }
