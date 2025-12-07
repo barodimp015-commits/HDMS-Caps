@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -174,7 +173,6 @@ export default function ReportsPage() {
 
 
   return (
-    <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -367,7 +365,10 @@ export default function ReportsPage() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ status, percent }) => `${status}: ${(percent * 100).toFixed(0)}%`}
+
+                           label={({ status, percent }: any) =>
+                    `${status} ${((percent ?? 0) * 100).toFixed(0)}%`
+                  }
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="count"
@@ -439,6 +440,6 @@ export default function ReportsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
+    
   )
 }

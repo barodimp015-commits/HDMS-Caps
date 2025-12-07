@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { AdminLayout } from "@/components/admin-layout"
 import { InteractiveMap } from "@/components/interactive-map"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -46,14 +45,14 @@ export default function MapPage() {
       
   // Get unique families and conservation statuses for filters
   const families = useMemo(() => {
-    const uniqueFamilies = Array.from(new Set(mockSpecimens.map((s) => s.family))).sort()
+    const uniqueFamilies = Array.from(new Set(specimens.map((s) => s.family))).sort()
     return uniqueFamilies
-  }, [])
+  }, [specimens])
 
   const conservationStatuses = useMemo(() => {
-    const uniqueStatuses = Array.from(new Set(mockSpecimens.map((s) => s.conservationStatus))).sort()
+    const uniqueStatuses = Array.from(new Set(specimens.map((s) => s.conservationStatus))).sort()
     return uniqueStatuses
-  }, [])
+  }, [specimens])
 
   // Filter specimens based on selected filters
   const filteredSpecimens = useMemo(() => {
@@ -93,7 +92,7 @@ export default function MapPage() {
     return null
   }
 
-  const selectedSpecimenData = selectedSpecimen ? mockSpecimens.find((s) => s.id === selectedSpecimen) : null
+  const selectedSpecimenData = selectedSpecimen ? specimens.find((s) => s.id === selectedSpecimen) : null
 
   return (
    
@@ -126,9 +125,9 @@ export default function MapPage() {
                       <SelectValue placeholder="All families" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All families ({mockSpecimens.length})</SelectItem>
+                      <SelectItem value="all">All families ({specimens.length})</SelectItem>
                       {families.map((family) => {
-                        const count = mockSpecimens.filter((s) => s.family === family).length
+                        const count = specimens.filter((s) => s.family === family).length
                         return (
                           <SelectItem key={family} value={family}>
                             {family} ({count})
@@ -148,7 +147,7 @@ export default function MapPage() {
                     <SelectContent>
                       <SelectItem value="all">All statuses</SelectItem>
                       {conservationStatuses.map((status) => {
-                        const count = mockSpecimens.filter((s) => s.conservationStatus === status).length
+                        const count = specimens.filter((s) => s.conservationStatus === status).length
                         return (
                           <SelectItem key={status} value={status}>
                             {status} ({count})
@@ -225,7 +224,7 @@ export default function MapPage() {
                     <div>
                       <span className="text-muted-foreground">Location:</span>{" "}
                       <span className="font-medium">
-                        {selectedSpecimenData.location.county}, {selectedSpecimenData.location.state}
+                        {selectedSpecimenData.location.city}, {selectedSpecimenData.location.state}
                       </span>
                     </div>
                     <div>

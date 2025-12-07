@@ -1,8 +1,7 @@
 "use client"
-
+import React, { use } from "react"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { AdminLayout } from "@/components/admin-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -28,9 +27,10 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { GetSpecimen } from "@/lib/firebase-herbarium"
+export default function SpecimenDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const unwrappedParams = React.use(params)
+    const specimenId = unwrappedParams.id
 
-export default function SpecimenDetailsPage() {
-  const params = useParams()
   const router = useRouter()
   const { user } = useAuth()
   const [specimen, setSpecimen] = useState<Specimen | null>(null)
@@ -39,10 +39,8 @@ export default function SpecimenDetailsPage() {
 
 useEffect(() => {
   const fetchData = async () => {
-    if (!params.id) return;
 
     // Normalize param to string
-    const specimenId = Array.isArray(params.id) ? params.id[0] : params.id;
    console.log(specimenId, " ???")
 
     // Await GetSpecimen() because it returns a Promise<Specimen | null>
@@ -55,25 +53,24 @@ useEffect(() => {
   };
 
   fetchData();
-}, [params.id]);
+}, [specimenId]);
 
 
   const handleBack = () => {
     router.back()
   }
 
-  const handleEdit = () => {
-    router.push(`/specimens/${params.id}/edit`)
-  }
+
+  
 
   const handleBookmark = () => {
     const bookmarks = JSON.parse(localStorage.getItem("hdms-bookmarks") || "[]")
     let updatedBookmarks
 
     if (isBookmarked) {
-      updatedBookmarks = bookmarks.filter((id: string) => id !== params.id)
+      updatedBookmarks = bookmarks.filter((id: string) => id !== specimenId)
     } else {
-      updatedBookmarks = [...bookmarks, params.id]
+      updatedBookmarks = [...bookmarks, specimenId]
     }
 
     localStorage.setItem("hdms-bookmarks", JSON.stringify(updatedBookmarks))
@@ -174,13 +171,12 @@ const handleDownload = () => {
                   Share
                 </Button>
               </>
-         
-            {user.role === "admin" && (
-              <Button onClick={handleEdit} className="flex items-center gap-2">
+        
+          
+              <Button onClick={() =>    router.push(`/researcher/specimens/${specimenId}/edit`)}className="flex items-center gap-2">
                 <Edit className="h-4 w-4" />
                 Edit Specimen
               </Button>
-            )}
           </div>
         </div>
 

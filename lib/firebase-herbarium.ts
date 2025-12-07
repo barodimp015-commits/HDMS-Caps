@@ -37,7 +37,7 @@ export const AddNewSpecimen = async (
 // ---------------------------------
 // UPDATE
 // ---------------------------------
-export async function UpdateNewSpecimen(
+export async function UpdateSpecimen(
   specimenId: string,
   specimenData: Partial<Specimen>
 ): Promise<boolean> {

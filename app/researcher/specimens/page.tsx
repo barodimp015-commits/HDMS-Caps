@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { AdminLayout } from "@/components/admin-layout"
 import { SpecimenCard } from "@/components/specimen-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

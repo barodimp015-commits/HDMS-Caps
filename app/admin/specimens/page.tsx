@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Search, Edit, Trash2, Eye, CheckCircle } from "lucide-react"
+import Link from "next/link"
 
 export default function AdminSpecimensPage() {
   const specimens = [
@@ -40,10 +41,12 @@ export default function AdminSpecimensPage() {
           <h1 className="text-3xl font-bold tracking-tight">Specimen Management</h1>
           <p className="text-muted-foreground">Manage all specimen records and approvals</p>
         </div>
+        <Link href={'/admin/specimens/new'}>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
           Add Specimen
         </Button>
+        </Link>
       </div>
 
       <Card>

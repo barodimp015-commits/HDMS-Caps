@@ -15,7 +15,7 @@ import { db } from "@/config/firebase"
 import { doc, getDoc } from "firebase/firestore"
 
 const navigation = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Specimens", href: "/admin/specimens", icon: Database },
   { name: "Map", href: "/admin/map", icon: MapPin },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
