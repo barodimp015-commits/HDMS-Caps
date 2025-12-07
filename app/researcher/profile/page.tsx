@@ -13,12 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Camera, Mail, Award, BookOpen, Leaf, Users, Loader2 } from 'lucide-react'
 import { useAuth } from "@/components/Auth/auth-provider"
 import { db, doc } from "@/config/firebase"
-import { getUserProfile, updateUserProfile } from '@/lib/user'
+import { getUserProfile, updateUserProfile } from '@/lib/firebase-user'
 import router from 'next/router'
 import { ResearcherData } from '@/model/user'
 import Link from 'next/link'
 import { Specimen } from "@/model/Specimen"
-import { GetAllSpecimen, GetUserSpecimens } from "@/lib/herbarium"
+import { GetAllSpecimen, GetUserSpecimens } from "@/lib/firebase-herbarium"
 
 
 

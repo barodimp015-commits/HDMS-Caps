@@ -1,4 +1,4 @@
-import { updateUserProfile } from '@/lib/user';
+import { updateUserProfile } from '@/lib/firebase-user';
 /**
  * Saves a file to local storage and returns the file path
  * 

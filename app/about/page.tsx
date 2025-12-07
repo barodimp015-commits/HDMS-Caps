@@ -1,5 +1,5 @@
 import { getAuthenticatedUser } from "@/lib/auth-server"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Leaf, Users, Target, Award, Mail, MapPin, Phone } from "lucide-react"
 import { redirect } from "next/navigation"
@@ -12,7 +12,7 @@ export default async function AboutPage() {
   }
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -187,6 +187,6 @@ export default async function AboutPage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   )
 }

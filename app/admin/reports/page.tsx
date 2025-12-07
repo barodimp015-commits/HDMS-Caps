@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -174,7 +174,7 @@ export default function ReportsPage() {
 
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -439,6 +439,6 @@ export default function ReportsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   )
 }

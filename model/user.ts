@@ -1,7 +1,14 @@
 export type UserRole = "admin" | "researcher" 
 
+export interface tempUser {
+  email: string
+  role: UserRole
+}
+
+
+
 export interface Userdata {
-  id: string
+  id: string 
   firstName?: string
   lastName?: string
   email: string

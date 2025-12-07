@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminLayout } from "@/components/admin-layout"
 import { InteractiveMap } from "@/components/interactive-map"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,7 @@ import { mockSpecimens } from "@/lib/mock-data"
 import { MapPin, Filter, Layers, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Specimen } from "@/model/Specimen"
-import { GetAllSpecimen } from "@/lib/herbarium"
+import { GetAllSpecimen } from "@/lib/firebase-herbarium"
 
 export default function MapPage() {
   const { user } = useAuth()

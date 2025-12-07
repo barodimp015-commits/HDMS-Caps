@@ -51,6 +51,7 @@ const router = useRouter()
 
   // Save user helper
   const saveUser = (u: Userdata | null) => {
+    
     setUser(u)
     if (u) {
       localStorage.setItem("hdms-user", JSON.stringify(u))

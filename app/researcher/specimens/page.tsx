@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminLayout } from "@/components/admin-layout"
 import { SpecimenCard } from "@/components/specimen-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +14,7 @@ import { Search, Filter, Plus, Grid, List, SortAsc, SortDesc } from "lucide-reac
 import { UserRole } from "@/model/user"
 import { useRouter } from "next/navigation"
 import { Specimen } from "@/model/Specimen"
-import { GetAllSpecimen } from "@/lib/herbarium"
+import { GetAllSpecimen } from "@/lib/firebase-herbarium"
 
 
 type ViewMode = "grid" | "list"

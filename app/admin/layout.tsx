@@ -1,15 +1,13 @@
 import type React from "react"
 import { RoleBasedRedirect } from "@/components/Auth/role-based-redirect"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminSidebar } from "@/components/admin-sidebar"
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <RoleBasedRedirect allowedRoles={["admin"]}>
-      <DashboardLayout>{children}</DashboardLayout>
+     <AdminSidebar>
+      {children}
+     </AdminSidebar>
     </RoleBasedRedirect>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminLayout } from "@/components/admin-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -27,7 +27,7 @@ import {
   Share,
 } from "lucide-react"
 import Image from "next/image"
-import { GetSpecimen } from "@/lib/herbarium"
+import { GetSpecimen } from "@/lib/firebase-herbarium"
 
 export default function SpecimenDetailsPage() {
   const params = useParams()

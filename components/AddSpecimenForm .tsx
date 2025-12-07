@@ -17,7 +17,7 @@ import { InteractiveMap } from "@/components/interactive-map"
 import { reverseGeocode } from "@/lib/geocode"
 import { useRouter } from "next/navigation"
 import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
-import { AddNewSpecimen } from "@/lib/herbarium"
+import { AddNewSpecimen } from "@/lib/firebase-herbarium"
 import { useAuth } from "./Auth/auth-provider"
 import { db, doc, getDoc } from "@/config/firebase"
 

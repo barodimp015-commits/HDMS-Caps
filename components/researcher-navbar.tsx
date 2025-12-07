@@ -12,7 +12,7 @@ import Image from "next/image"
 import { useAuth } from "@/components/Auth/auth-provider"
 import { db, doc, getDoc } from "@/config/firebase"
 
-export function VisitorNavbar() {
+  export function Navbar() {
     const { user,logout } = useAuth()
   
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -33,8 +33,6 @@ export function VisitorNavbar() {
     
     if (snap.exists()) {
       const data = snap.data()
-        console.log("Data: ",data)
-      // Example: load profile photo
       if (data.profilePhoto) {
         setProfilePhoto(data.profilePhoto)
       }
@@ -59,7 +57,10 @@ export function VisitorNavbar() {
               </Link>
             </div>
 
-            <div className="hidden md:flex items-center space-x-8">
+           
+
+            <div className="flex items-center space-x-4">
+               <div className="hidden md:flex items-center space-x-8">
               {navItems.map((item) => {
                 const Icon = item.icon
                 return (
@@ -74,9 +75,7 @@ export function VisitorNavbar() {
                 )
               })}
             </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="hidden lg:block">
+              <div className="hidden lg:block items-center">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Search specimens..." className="pl-10 w-64" />
