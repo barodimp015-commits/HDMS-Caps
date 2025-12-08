@@ -59,20 +59,6 @@ const [researcher, setResearcher] = useState<ResearcherData>({
 
 
 
-
-
-  const [publications] = useState([
-    { year: 2024, title: 'Taxonomic Assessment of Rare Fern Species in Northern Michigan', journal: 'American Journal of Botany', citations: 12 },
-    { year: 2023, title: 'Climate Resilience in Native Plant Communities', journal: 'Ecology Letters', citations: 28 },
-    { year: 2022, title: 'Digitization and Analysis of Historical Herbarium Collections', journal: 'Plant Science Today', citations: 15 },
-  ])
-
-  const [herbariumContributions] = useState([
-    { year: 2024, specimens: 245, families: 18, sites: 5 },
-    { year: 2023, specimens: 320, families: 22, sites: 7 },
-    { year: 2022, specimens: 285, families: 20, sites: 6 },
-  ])
-
   const handleUploadClick = () => {
     fileInputRef.current?.click()
   }
@@ -530,7 +516,7 @@ useEffect(() => {
                 </Card>
               </TabsContent>
 
-              {/* Publications Tab */}
+              {/* Herbarium Tab */}
               <TabsContent value="publications" className="space-y-6">
                 <Card className="border-secondary/20">
                   <CardHeader className="border-b border-secondary/20">

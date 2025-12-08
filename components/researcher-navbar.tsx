@@ -20,7 +20,6 @@ import { db, doc, getDoc } from "@/config/firebase"
 
   const navItems = [
     { href: "/researcher", label: "home", icon: Home },
-    { href: "/researcher/specimens", label: "Browse Specimens", icon: Database },
     { href: "/researcher/map", label: "Explore Map", icon: MapPin },
   ]
 
@@ -75,12 +74,6 @@ import { db, doc, getDoc } from "@/config/firebase"
                 )
               })}
             </div>
-              <div className="hidden lg:block items-center">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search specimens..." className="pl-10 w-64" />
-                </div>
-              </div>
                 <Badge variant="outline" className="hidden sm:flex ">
                   Researcher
                 </Badge>

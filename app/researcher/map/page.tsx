@@ -2,15 +2,16 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { InteractiveMap } from "@/components/map/interactive-map"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle,CardDescription} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/Auth/auth-provider"
-import { MapPin, Filter, Layers, Eye } from "lucide-react"
+import { MapPin, Filter, Layers, Eye, Leaf } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Specimen } from "@/model/Specimen"
 import { GetAllSpecimen } from "@/lib/firebase-herbarium"
+import Link from "next/link"
 
 export default function MapPage() {
   const { user } = useAuth()
@@ -95,6 +96,7 @@ export default function MapPage() {
 
   console.log(filteredSpecimens,"---------")
   return (
+
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -306,6 +308,6 @@ export default function MapPage() {
           </Card>
         </div>
       </div>
-    
+
   )
 }

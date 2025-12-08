@@ -24,3 +24,17 @@ export interface Specimen {
   notes: string
   createdAt?: string 
 }
+
+export type ViewMode = "grid" | "list"
+export type SortField = "scientificName" | "commonName" | "collectionDate" | "location"
+export type SortOrder = "asc" | "desc"
+
+export interface SummaryContribution {
+  specimens: number
+  families: number
+  sites: number
+}
+export interface HerbariumContribution extends SummaryContribution{
+  year: number
+}
+

@@ -10,13 +10,16 @@ import {
   updateDoc,
   deleteDoc,
   query, 
-  where 
+  where ,
+  orderBy
 } from "@/config/firebase"
 import { format } from "date-fns"
+import {HerbariumContribution,SummaryContribution} from "@/model/Specimen"
 
 // ---------------------------------
 // CREATE
 // ---------------------------------
+
 export const AddNewSpecimen = async (
   specimenData: Omit<Specimen, "id">
 ): Promise<string | null> => {
@@ -139,12 +142,90 @@ const formatYear = (timestamp: any): string => {
   return timestamp.toDate().getFullYear().toString()
 }
 
-const formatTimestamp = (timestamp: any): string => {
-    if (!timestamp) return "Unknown"
-    
-    if (timestamp.toDate) {
-      return format(timestamp.toDate(), "MMM d, yyyy")
-    }
-    
-    return "Unknown"
+
+
+
+
+export const GetHerbariumContributions = async (userId: string): Promise<HerbariumContribution[]> => {
+  try {
+    const specimenCol = collection(db, "specimen")
+    const q = query(specimenCol, where("researcherId", "==", userId))
+
+    const snapshot = await getDocs(q)
+    const specimens = snapshot.docs.map(doc => (
+      { id: doc.id,
+         ...doc.data(),
+        createdAt: formatYear(doc.data().createdAt), 
+
+      } as Specimen))
+
+    // Group specimens by year
+    const contributionsMap: Record<number, { families: Set<string>; city: Set<string>; count: number }> = {}
+
+    specimens.forEach(specimen => {
+  
+         // Convert formatted year (string) → number
+      const year = Number(specimen.createdAt)
+      if (isNaN(year)) return
+
+      if (!contributionsMap[year]) {
+        contributionsMap[year] = { families: new Set(), city: new Set(), count: 0 }
+      }
+
+      contributionsMap[year].count += 1
+      if (specimen.family) contributionsMap[year].families.add(specimen.family)
+      if (specimen.location?.city) contributionsMap[year].city.add(specimen.location.city)
+    })
+
+    // Convert to array and sort by year descending
+    const contributions: HerbariumContribution[] = Object.entries(contributionsMap)
+      .map(([year, data]) => ({
+        year: parseInt(year),
+        specimens: data.count,
+        families: data.families.size,
+        sites: data.city.size,
+      }))
+      .sort((a, b) => b.year - a.year)
+
+    return contributions
+  } catch (error) {
+    console.error("Error calculating herbarium contributions:", error)
+    return []
   }
+}
+
+export const GetSummaryContributions = async (userId: string): Promise<SummaryContribution> => {
+  try {
+    const specimenCol = collection(db, "specimen")
+    const q = query(specimenCol, where("researcherId", "==", userId))
+
+    const snapshot = await getDocs(q)
+
+    let specimenCount = 0
+    const families = new Set<string>()
+    const sites = new Set<string>()
+
+    snapshot.docs.forEach(doc => {
+      const data = doc.data() as Specimen
+
+      specimenCount += 1
+
+      if (data.family) families.add(data.family)
+      if (data.location?.city) sites.add(data.location.city)
+    })
+
+    return {
+      specimens: specimenCount,
+      families: families.size,
+      sites: sites.size,
+    }
+
+  } catch (error) {
+    console.error("Error calculating summary contributions:", error)
+    return {
+      specimens: 0,
+      families: 0,
+      sites: 0,
+    }
+  }
+}

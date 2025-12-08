@@ -269,9 +269,12 @@ export default function UpdateSpecimenForm({ specimenId }: { specimenId: string 
         </div>
 
       </div>
-
+      <div>
+        <label className="text-sm font-medium">Collection Date</label>
       <Input type="date" value={formData.collectionDate} onChange={(e) => handleChange("collectionDate", e.target.value)} />
-
+      </div>
+       <div className="space-y-2">
+        <label className="text-sm font-medium">Conservation Status</label>
       {/* STATUS */}
       <Select value={formData.conservationStatus} onValueChange={(v) => handleChange("conservationStatus", v)}>
         <SelectTrigger>
@@ -285,8 +288,11 @@ export default function UpdateSpecimenForm({ specimenId }: { specimenId: string 
           <SelectItem value="Critically Endangered">Critically Endangered</SelectItem>
         </SelectContent>
       </Select>
-
+    </div>
       {/* IMAGE */}
+            <div className="space-y-2">
+        <label className="text-sm font-medium">Specimen Image</label>
+
       <div className="flex items-center gap-4">
         <Input type="file" accept="image/*" onChange={handleImageChange} />
         {preview ? (
@@ -297,10 +303,16 @@ export default function UpdateSpecimenForm({ specimenId }: { specimenId: string 
           </div>
         )}
       </div>
+      </div>
+      <div>
+        <label className="text-sm font-medium">Habitat</label>
 
       <Textarea value={formData.habitat} onChange={(e) => handleChange("habitat", e.target.value)} placeholder="Habitat" />
+      </div>
+   <div className="space-y-2">
+        <label className="text-sm font-medium">Additional Notes</label>
       <Textarea value={formData.notes} onChange={(e) => handleChange("notes", e.target.value)} placeholder="Notes" />
-
+    </div>
       <div className="flex justify-end gap-3">
         <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel
