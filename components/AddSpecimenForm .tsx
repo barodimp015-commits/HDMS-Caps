@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { ArrowLeft, ImageIcon } from "lucide-react"
-import { InteractiveMap } from "@/components/interactive-map"
+import { InteractiveMap } from "@/components/map/picking-map"
 import { reverseGeocode } from "@/lib/geocode"
 import { useRouter } from "next/navigation"
 import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"

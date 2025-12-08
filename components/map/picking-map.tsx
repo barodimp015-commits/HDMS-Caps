@@ -6,7 +6,6 @@ import type { Specimen } from "@/model/Specimen"
 interface InteractiveMapProps {
   specimens?: Specimen[]
   onSpecimenSelect?: (specimenId: string) => void
-  selectedSpecimen?: string | null
 
   enablePicking?: boolean
   onLocationPick?: (lat: number, lng: number) => void
@@ -18,7 +17,6 @@ interface InteractiveMapProps {
 export function InteractiveMap({
   specimens = [],
   onSpecimenSelect,
-  selectedSpecimen,
   enablePicking = false,
   onLocationPick,
   initialLat = null,
@@ -44,7 +42,7 @@ export function InteractiveMap({
       // Initialize map
       if (mapRef.current && !mapInstanceRef.current) {
         mapInstanceRef.current = L.map(mapRef.current).setView(
-          [initialLat ?? 14.5995, initialLng ?? 120.9842],
+          [initialLat ?? 8.0292, initialLng ?? 124.2977],
           initialLat && initialLng ? 12 : 6
         )
 
