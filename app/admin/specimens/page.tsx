@@ -1,112 +1,166 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Search, Edit, Trash2, Eye, CheckCircle } from "lucide-react"
-import Link from "next/link"
+"use client"
+
+import { ActiveFilters } from "@/components/specimens-cards/ActiveFilters"
+import { HeaderSection } from "@/components/specimens-cards/HeaderSection"
+import { SearchFilterCard } from "@/components/specimens-cards/SearchFilterCard"
+import { SpecimenResults } from "@/components/specimens-cards/SpecimenResults"
+import { ViewControls } from "@/components/specimens-cards/ViewControls"
+import { useState, useMemo, useEffect } from "react"
+import { useAuth } from "@/components/Auth/auth-provider"
+import { GetAllSpecimen, GetHerbariumContributions, GetSummaryContributions } from "@/lib/firebase-herbarium"
+import { Specimen } from "@/model/Specimen"
+import { ViewMode, SortField, SortOrder } from "@/model/Specimen"
+import Loading from "./loading"
+
+
+
 
 export default function AdminSpecimensPage() {
-  const specimens = [
-    {
-      id: 1,
-      scientificName: "Trillium grandiflorum",
-      commonName: "Large-flowered Trillium",
-      status: "Approved",
-      submittedBy: "researcher@msu.edu",
-      date: "2024-01-15",
-    },
-    {
-      id: 2,
-      scientificName: "Quercus alba",
-      commonName: "White Oak",
-      status: "Pending",
-      submittedBy: "sarah.johnson@msu.edu",
-      date: "2024-01-20",
-    },
-    {
-      id: 3,
-      scientificName: "Cypripedium reginae",
-      commonName: "Showy Lady Slipper",
-      status: "Approved",
-      submittedBy: "admin@msu.edu",
-      date: "2024-01-18",
-    },
-  ]
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Specimen Management</h1>
-          <p className="text-muted-foreground">Manage all specimen records and approvals</p>
-        </div>
-        <Link href={'/admin/specimens/new'}>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Specimen
-        </Button>
-        </Link>
-      </div>
+    const [specimens, setSpecimens] = useState<Specimen[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedFamily, setSelectedFamily] = useState("all")
+  const [selectedStatus, setSelectedStatus] = useState("all")
+  const [viewMode, setViewMode] = useState<ViewMode>("grid")
+  const [sortField, setSortField] = useState<SortField>("scientificName")
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc")
+  const [loading, setLoading] = useState(false)
+   const { user } = useAuth()
 
-      <Card>
-        <CardHeader>
-          <CardTitle>All Specimens</CardTitle>
-          <CardDescription>View, edit, and manage specimen records</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search specimens..." className="pl-10" />
-            </div>
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
-          <div className="space-y-4">
-            {specimens.map((specimen) => (
-              <div key={specimen.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex-1">
-                  <p className="font-medium">{specimen.scientificName}</p>
-                  <p className="text-sm text-muted-foreground">{specimen.commonName}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Submitted by {specimen.submittedBy} on {specimen.date}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Badge variant={specimen.status === "Approved" ? "default" : "secondary"}>{specimen.status}</Badge>
-                  <div className="flex items-center space-x-2">
-                    <Button size="sm" variant="outline">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    {specimen.status === "Pending" && (
-                      <Button size="sm" variant="outline">
-                        <CheckCircle className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <Button size="sm" variant="outline">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+
+  // Fetch specimens from Firebase
+useEffect(() => {
+  if (!user) return
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const data = await GetAllSpecimen()
+      setSpecimens(data)
+
+
+    } catch (error) {
+      console.error("Error fetching specimens:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchData()
+}, [user])
+
+
+  // Unique families & statuses for filters
+  const families = useMemo(() => Array.from(new Set(specimens.map((s) => s.family))).sort(), [specimens])
+  const statuses = useMemo(() => Array.from(new Set(specimens.map((s) => s.conservationStatus))).sort(), [specimens])
+
+  // Filter & sort specimens
+  const filteredSpecimens = useMemo(() => {
+    const filtered = specimens.filter((s) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        s.scientificName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.commonName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.genus.toLowerCase().includes(searchQuery.toLowerCase())
+
+      const matchesFamily = selectedFamily === "all" || s.family === selectedFamily
+      const matchesStatus = selectedStatus === "all" || s.conservationStatus === selectedStatus
+
+      return matchesSearch && matchesFamily && matchesStatus
+    })
+
+    filtered.sort((a, b) => {
+      let aValue: string | Date
+      let bValue: string | Date
+
+      switch (sortField) {
+        case "scientificName":
+          aValue = a.scientificName
+          bValue = b.scientificName
+          break
+        case "commonName":
+          aValue = a.commonName
+          bValue = b.commonName
+          break
+        case "collectionDate":
+          aValue = new Date(a.collectionDate)
+          bValue = new Date(b.collectionDate)
+          break
+        case "location":
+          aValue = `${a.location.state}, ${a.location.city}`
+          bValue = `${b.location.state}, ${b.location.city}`
+          break
+        default:
+          aValue = a.scientificName
+          bValue = b.scientificName
+      }
+
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1
+      return 0
+    })
+
+    return filtered
+  }, [specimens, searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
+
+  if (!user) return null
+  if (loading) return <Loading /> 
+
+
+
+return(
+  <div className="space-y-6">
+           {/* Header */}
+           <HeaderSection specimenCount={specimens.length} />
+ 
+           {/* Search & Filter */}
+           <SearchFilterCard
+             searchQuery={searchQuery}
+             setSearchQuery={setSearchQuery}
+             families={families}
+             selectedFamily={selectedFamily}
+             setSelectedFamily={setSelectedFamily}
+             statuses={statuses}
+             selectedStatus={selectedStatus}
+             setSelectedStatus={setSelectedStatus}
+             sortField={sortField}
+             setSortField={setSortField}
+             sortOrder={sortOrder}
+             setSortOrder={setSortOrder}
+           />
+ 
+           {/* View Controls */}
+           <ViewControls
+             filteredCount={filteredSpecimens.length}
+             totalCount={specimens.length}
+             viewMode={viewMode}
+             setViewMode={setViewMode}
+             onClearFilters={() => {
+               setSearchQuery("")
+               setSelectedFamily("all")
+               setSelectedStatus("all")
+             }}
+             isFiltering={!!searchQuery || selectedFamily !== "all" || selectedStatus !== "all"}
+           />
+ 
+           {/* Active Filters */}
+           <ActiveFilters
+             searchQuery={searchQuery}
+             selectedFamily={selectedFamily}
+             selectedStatus={selectedStatus}
+             clearSearch={() => setSearchQuery("")}
+             clearFamily={() => setSelectedFamily("all")}
+             clearStatus={() => setSelectedStatus("all")}
+           />
+ 
+           {/* Specimens Grid/List */}
+           <SpecimenResults
+             filteredSpecimens={filteredSpecimens}
+             allSpecimens={specimens}
+             viewMode={viewMode}
+             userRole={user.role}
+           />
+         </div>
+)
 }

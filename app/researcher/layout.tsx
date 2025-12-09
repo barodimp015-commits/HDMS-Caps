@@ -9,7 +9,7 @@ export default function ResearcherLayout({
   children: React.ReactNode
 }) {
   return (
-    <RoleBasedRedirect allowedRoles={["researcher"]}>
+    <RoleBasedRedirect allowedRoles={["researcher","admin" ]}>
      <div className="min-h-screen bg-background">
          <Navbar />
          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

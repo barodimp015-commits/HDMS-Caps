@@ -27,11 +27,19 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
   }, [specimen.id])
 
   const handleView = () => {
+     if(userRole == "reseacher"){
     router.push(`/researcher/specimens/${specimen.id}`)
+    }else{
+      router.push(`/admin/specimens/${specimen.id}`)
+    }
   }
 
   const handleEdit = () => {
+    if(userRole == "reseacher"){
     router.push(`/researcher/specimens/${specimen.id}/edit`)
+    }else{
+      router.push(`/admin/specimens/${specimen.id}/edit`)
+    }
   }
 
   const handleDelete = () => {

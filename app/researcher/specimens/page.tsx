@@ -33,12 +33,12 @@ export default function SpecimensPage() {
 
   const [herbariumContributions, setHerbariumContributions] = useState<HerbariumContribution[]>([])
 
-const [summaryContributions, setSummaryContributions] = 
-      useState<SummaryContribution>({
-        specimens: 0,
-        families: 0,
-        sites: 0,
-      })
+  const [summaryContributions, setSummaryContributions] = 
+        useState<SummaryContribution>({
+          specimens: 0,
+          families: 0,
+          sites: 0,
+        })
 
 
 

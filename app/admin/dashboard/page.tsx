@@ -34,7 +34,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard
             title="Total Users"
-            value={stats.totalUsers}
+            value={stats.totalUsers} 
             subtitle={`+${stats.userMonth} new this Month `}
             icon="Users"
           />
