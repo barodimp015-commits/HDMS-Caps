@@ -19,18 +19,20 @@ import { ResearcherData } from '@/model/user'
 import Link from 'next/link'
 import { Specimen } from "@/model/Specimen"
 import { GetAllSpecimen, GetUserSpecimens } from "@/lib/firebase-herbarium"
+import Loading from '@/app/loading'
 
 
 
 export default function ResearcherProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
     const [userData, setUserData] = useState<any>(null)
     const [newSpec, setNewSpec] = useState("");
     const [mySpecimens, setMySpecimens] = useState<Specimen[]>([])
     const { user } = useAuth()
+    
 
     
 
@@ -105,7 +107,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 const handleSave = async () => {
   if (!userData?.id) return
 
-  setIsLoading(true) // show loading state
+  setLoading(true) // show loading state
 
   try {
     // Prepare updated profile data from state
@@ -135,7 +137,7 @@ const handleSave = async () => {
   } catch (error) {
     console.error("Error saving profile:", error)
   } finally {
-    setIsLoading(false)
+    setLoading(false)
   }
 }
 
@@ -180,7 +182,7 @@ useEffect(() => {
   setUserData(parsed)
 
   const fetchProfile = async () => {
-    setIsLoading(true)
+    setLoading(true)
     try {
       const profile = await getUserProfile(parsed.id)
 
@@ -193,7 +195,7 @@ useEffect(() => {
     } catch (err) {
       console.error("Profile fetch error:", err)
     }
-    setIsLoading(false)
+    setLoading(false)
   }
 
 
@@ -202,7 +204,7 @@ useEffect(() => {
   }, [])
   
    
-  
+  if (loading) return <Loading/>
   
   return (
     <div className="min-h-screen bg-background">
@@ -430,10 +432,10 @@ useEffect(() => {
                       <div className="flex space-x-4 mt-6">
                         <Button
                           onClick={handleSave}
-                          disabled={isLoading}
+                          disabled={loading}
                           className="bg-primary hover:bg-primary/90 text-white"
                         >
-                          {isLoading ? 'Saving...' : 'Save Changes'}
+                          {loading ? 'Saving...' : 'Save Changes'}
                         </Button>
                         <Button variant="outline" onClick={handleCancel} className="border-secondary/20">
                           Cancel
@@ -495,25 +497,6 @@ useEffect(() => {
 
                 </Card>
 
-                {/* Funding and Resources Card */}
-                <Card className="border-secondary/20">
-                  <CardHeader className="border-b border-secondary/20">
-                    <CardTitle className="text-primary">Funding & Resources</CardTitle>
-                    <CardDescription>Active research funding and resources</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="p-4 bg-secondary/5 rounded-lg border border-secondary/20">
-                        <p className="text-sm text-gray-600 mb-1">Active Funding</p>
-                        <p className="text-2xl font-bold text-primary">{researcher.activeFunding}</p>
-                      </div>
-                      <div className="p-4 bg-secondary/5 rounded-lg border border-secondary/20">
-                        <p className="text-sm text-gray-600 mb-1">Collaborators</p>
-                        <p className="text-2xl font-bold text-primary">{researcher.collaborators}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
               </TabsContent>
 
               {/* Herbarium Tab */}

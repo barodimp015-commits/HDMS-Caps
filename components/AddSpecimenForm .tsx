@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation"
 import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
 import { AddNewSpecimen } from "@/lib/firebase-herbarium"
 import { useAuth } from "./Auth/auth-provider"
+import Loading from "@/app/loading"
 
 export default function AddSpecimenForm() {
   const router = useRouter()
@@ -170,6 +171,7 @@ export default function AddSpecimenForm() {
     }
   }
 
+  if(loading)return<Loading/>
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10">

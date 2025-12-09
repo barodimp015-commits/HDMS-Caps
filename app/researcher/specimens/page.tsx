@@ -15,6 +15,7 @@ import ContributionSummaryCard from "@/components/specimens-cards/ContributionSu
 import HerbariumContributionsCard from "@/components/specimens-cards/HerbariumContributionsCard"
 
 import {HerbariumContribution,SummaryContribution} from "@/model/Specimen"
+import Loading from "./loading"
 
 
 export default function SpecimensPage() {
@@ -122,6 +123,8 @@ useEffect(() => {
   }, [specimens, searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
 
   if (!user) return null
+  if (loading) return <Loading /> 
+
 
   return (
      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

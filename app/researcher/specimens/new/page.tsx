@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import AddSpecimenForm from "@/components/AddSpecimenForm "
 
-export const dynamic = "force-dynamic"  // Ensures SSR (optional)
 
 export default function AddSpecimenPage() {
   return (

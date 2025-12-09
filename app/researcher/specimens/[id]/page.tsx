@@ -27,6 +27,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { GetSpecimen } from "@/lib/firebase-herbarium"
+import Loading from "../loading"
 export default function SpecimenDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const unwrappedParams = React.use(params)
     const specimenId = unwrappedParams.id
@@ -36,9 +37,12 @@ export default function SpecimenDetailsPage({ params }: { params: Promise<{ id: 
   const [specimen, setSpecimen] = useState<Specimen | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isBookmarked, setIsBookmarked] = useState(false)
+   const [loading, setLoading] = useState(false)
+  
 
 useEffect(() => {
   const fetchData = async () => {
+    setLoading(true)
 
     // Normalize param to string
    console.log(specimenId, " ???")
@@ -50,6 +54,7 @@ useEffect(() => {
     // Bookmark check
     const bookmarks = JSON.parse(localStorage.getItem("hdms-bookmarks") || "[]");
     setIsBookmarked(bookmarks.includes(specimenId));
+        setLoading(false)
   };
 
   fetchData();
@@ -131,8 +136,9 @@ const handleDownload = () => {
   if (!user) {
     return null
   }
-
+    
   if (!specimen) {
+    if (loading) return <Loading /> 
     return (
     
         <div className="flex items-center justify-center min-h-[400px]">
@@ -145,6 +151,8 @@ const handleDownload = () => {
       
     )
   }
+
+
 
   return (
     

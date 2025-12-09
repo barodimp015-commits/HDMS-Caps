@@ -28,6 +28,7 @@ import {
   orderBy,
   limit,
   serverTimestamp,
+  Timestamp
   
 } from "firebase/firestore"
 
@@ -72,6 +73,7 @@ export {
   orderBy,
   limit,
   serverTimestamp,
+  Timestamp
 }
 
 export default app

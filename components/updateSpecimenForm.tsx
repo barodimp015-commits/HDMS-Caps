@@ -19,6 +19,7 @@ import { useRouter, useParams } from "next/navigation"
 import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
 import { GetSpecimen, UpdateSpecimen } from "@/lib/firebase-herbarium"
 import { useAuth } from "@/components/Auth/auth-provider"
+import Loading from "@/app/loading"
 
 
 export default function UpdateSpecimenForm({ specimenId }: { specimenId: string }) {
@@ -200,7 +201,7 @@ export default function UpdateSpecimenForm({ specimenId }: { specimenId: string 
     }
   }
 
-  if (loading) return <p>Loading...</p>
+  if (loading) return <Loading/>
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10">

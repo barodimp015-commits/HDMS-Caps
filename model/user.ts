@@ -20,15 +20,11 @@ export interface Userdata {
 }
 
 
-export interface ResearcherData {
-  id: string
-  firstName: string
-  lastName: string
+export interface ResearcherData extends Userdata {
   profilePhoto?: string
   title?: string
   department?: string
   institution?: string
-  email: string
   phone?: string
   researcherId?: string
   joinDate?: string
