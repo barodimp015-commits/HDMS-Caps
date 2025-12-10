@@ -1,3 +1,5 @@
+"use client"
+
 import UpdateSpecimenForm from "@/components/updateSpecimenForm";
 import { useParams } from "next/navigation";
 

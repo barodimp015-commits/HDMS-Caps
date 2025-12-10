@@ -121,6 +121,7 @@ useEffect(() => {
 
     return filtered
   }, [specimens, searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
+  
 
   if (!user) return null
   if (loading) return <Loading /> 

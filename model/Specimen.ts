@@ -23,6 +23,7 @@ export interface Specimen {
   imageUrl: string
   notes: string
   createdAt?: string 
+  status:string
 }
 
 export type ViewMode = "grid" | "list"

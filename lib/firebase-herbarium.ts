@@ -60,15 +60,44 @@ export async function UpdateSpecimen(
 // ---------------------------------
 // GET ALL
 // ---------------------------------
+function cleanFirestoreData(obj: any): any {
+  if (obj === null || obj === undefined) return obj
+
+  // Firestore Timestamp → ISO string
+  if (typeof obj === "object" && obj.toDate instanceof Function) {
+    return obj.toDate().toISOString()
+  }
+
+  // Array
+  if (Array.isArray(obj)) {
+    return obj.map(cleanFirestoreData)
+  }
+
+  // Object
+  if (typeof obj === "object") {
+    const newObj: any = {}
+    for (const key in obj) {
+      newObj[key] = cleanFirestoreData(obj[key])
+    }
+    return newObj
+  }
+
+  return obj
+}
+
 export async function GetAllSpecimen(): Promise<Specimen[]> {
   try {
     const specimenRef = collection(db, "specimen")
     const snapshot = await getDocs(specimenRef)
 
-    return snapshot.docs.map((docSnap) => ({
+    return snapshot.docs.map((docSnap) => {
+      const data = docSnap.data()
+
+      return {
         id: docSnap.id,
-        ...docSnap.data(),
-    })) as unknown as Specimen[]
+        ...cleanFirestoreData(data),  // 🔥 Clean all timestamps
+      }
+    }) as Specimen[]
   } catch (error) {
     console.error("Error fetching specimens:", error)
     return []

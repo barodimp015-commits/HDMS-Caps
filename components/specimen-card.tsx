@@ -9,6 +9,8 @@ import { MapPin, Calendar, User, Edit, Trash2, Eye, Bookmark } from "lucide-reac
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { DeleteSpecimen } from "@/lib/firebase-herbarium"
+import { DeleteConfirmationModal } from "./DeleteConfirmationModal"
 
 interface SpecimenCardProps {
   specimen: Specimen
@@ -19,6 +21,7 @@ interface SpecimenCardProps {
 export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps) {
   const router = useRouter()
   const [isBookmarked, setIsBookmarked] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   useEffect(() => {
     // Check if specimen is bookmarked
@@ -27,25 +30,28 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
   }, [specimen.id])
 
   const handleView = () => {
-     if(userRole == "reseacher"){
     router.push(`/researcher/specimens/${specimen.id}`)
-    }else{
-      router.push(`/admin/specimens/${specimen.id}`)
-    }
   }
 
   const handleEdit = () => {
-    if(userRole == "reseacher"){
     router.push(`/researcher/specimens/${specimen.id}/edit`)
-    }else{
-      router.push(`/admin/specimens/${specimen.id}/edit`)
-    }
   }
 
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete specimen:", specimen.id)
-  }
+    const handleDelete = () => {
+      setShowDeleteModal(true)
+    }
+
+    const confirmDelete = async () => {
+      const result = await DeleteSpecimen(specimen.id)
+
+      if (result) {
+        alert("Specimen deleted successfully!")
+        setShowDeleteModal(false)
+        router.refresh()
+      } else {
+        alert("Failed to delete specimen.")
+      }
+    }
 
   const handleBookmark = () => {
     const bookmarks = JSON.parse(localStorage.getItem("hdms-bookmarks") || "[]")
@@ -158,9 +164,16 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
                         <Trash2 className="h-4 w-4 mr-1" />
                         Delete
                       </Button>
+
                     </>
                   )}
                 </div>
+                      <DeleteConfirmationModal
+                  open={showDeleteModal}
+                  onConfirm={confirmDelete}
+                  onCancel={() => setShowDeleteModal(false)
+                  }
+                />
               </div>
             </div>
           </div>
@@ -243,8 +256,14 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
               </>
             )}
           </div>
+           <DeleteConfirmationModal
+              open={showDeleteModal}
+              onConfirm={confirmDelete}
+              onCancel={() => setShowDeleteModal(false)}
+            />
         </div>
       </CardContent>
     </Card>
+    
   )
 }
