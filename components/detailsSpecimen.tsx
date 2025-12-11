@@ -41,23 +41,24 @@ export default function SpecimenDetailsPage({ specimenId }: { specimenId: string
   
 
 useEffect(() => {
-  const fetchData = async () => {
+    if (!specimenId) return
     setLoading(true)
 
     // Normalize param to string
    console.log(specimenId, " ???")
 
     // Await GetSpecimen() because it returns a Promise<Specimen | null>
-    const foundSpecimen = await GetSpecimen(specimenId);
-    setSpecimen(foundSpecimen || null);
+    const unsubscribe =  GetSpecimen(specimenId, (data) => {
+      setSpecimen(data || null);
 
+});
     // Bookmark check
     const bookmarks = JSON.parse(localStorage.getItem("hdms-bookmarks") || "[]");
     setIsBookmarked(bookmarks.includes(specimenId));
         setLoading(false)
-  };
+  return () => unsubscribe() // cleanup listener
 
-  fetchData();
+
 }, [specimenId]);
 
 

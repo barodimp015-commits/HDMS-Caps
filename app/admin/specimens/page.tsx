@@ -28,32 +28,29 @@ export default function AdminSpecimensPage() {
    const { user } = useAuth()
 
 
-
-  // Fetch specimens from Firebase
+// Fetch specimens from Firebase (REALTIME)
 useEffect(() => {
   if (!user) return
 
-  const fetchData = async () => {
-    setLoading(true)
-    try {
-      const data = await GetAllSpecimen()
-      setSpecimens(data)
+  setLoading(true)
 
+  // Start realtime listener
+  const unsubscribe = GetAllSpecimen((data) => {
+    setSpecimens(data)
+    setLoading(false)
+  })
 
-    } catch (error) {
-      console.error("Error fetching specimens:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  fetchData()
+  // Cleanup listener on unmount
+  return () => unsubscribe()
 }, [user])
 
 
   // Unique families & statuses for filters
-  const families = useMemo(() => Array.from(new Set(specimens.map((s) => s.family))).sort(), [specimens])
-  const statuses = useMemo(() => Array.from(new Set(specimens.map((s) => s.conservationStatus))).sort(), [specimens])
+const families = useMemo(
+  () => Array.from(new Set(specimens?.map((s) => s.family || "") || [])).filter(Boolean).sort(),
+  [specimens]
+)
+  const statuses = useMemo(() => Array.from(new Set(specimens?.map((s) => s.conservationStatus || "")|| [])).sort(), [specimens])
 
   // Filter & sort specimens
   const filteredSpecimens = useMemo(() => {

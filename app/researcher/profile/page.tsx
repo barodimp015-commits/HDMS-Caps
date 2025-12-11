@@ -46,6 +46,7 @@ const [researcher, setResearcher] = useState<ResearcherData>({
   title: '',
   department: '',
   institution: '',
+  role:'',
   email: '',
   phone: '',
   researcherId: '',
@@ -57,6 +58,8 @@ const [researcher, setResearcher] = useState<ResearcherData>({
   collaborators: 0,
   activeFunding: '',
   researchFocus: '',
+  createdAt: ''
+
 })
 
 
@@ -159,17 +162,16 @@ const handleCancel = () => {
 }
 
 useEffect(() => {
+  if (!user) return
 
-
-  async function load() {
-    if (!user) return
-    const data = await GetUserSpecimens(user.id)
+  // Start realtime listener
+  const unsubscribe = GetUserSpecimens(user.id, (data) => {
     setMySpecimens(data)
-  }
+  })
 
-  load()
+  // Cleanup on unmount
+  return () => unsubscribe()
 }, [user])
-
 
 useEffect(() => {
   const storedUser = localStorage.getItem("hdms-user")
@@ -228,8 +230,8 @@ useEffect(() => {
                         alt="Profile" 
                       />
                       <AvatarFallback className="bg-secondary text-black text-xl">
-                        {researcher.firstName[0]}
-                        {researcher.lastName[0]}
+                        {researcher.firstName}
+                        {researcher.lastName}
                       </AvatarFallback>
                     </Avatar>
                   {isEditing && (

@@ -48,7 +48,14 @@ import { db, doc, getDoc } from "@/config/firebase"
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link href="/researcher" className="flex items-center space-x-2">
-                <Leaf className="h-8 w-8 text-primary" />
+              <Image
+              src="/logo/icon.png"
+              alt="Logo"
+              width={40}
+              height={40}
+              priority
+              
+                />
                 <div className="hidden sm:block">
                   <h1 className="text-xl font-bold">MSU Herbarium</h1>
            

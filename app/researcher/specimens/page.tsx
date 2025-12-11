@@ -46,31 +46,40 @@ export default function SpecimensPage() {
 useEffect(() => {
   if (!user) return
 
-  const fetchData = async () => {
-    setLoading(true)
-    try {
-      const data = await GetAllSpecimen()
-      setSpecimens(data)
+  setLoading(true)
 
-      const contributionsData = await GetHerbariumContributions(user.id)
-      const summaryData = await GetSummaryContributions(user.id)
+  // Realtime listener for all specimens
+  const unsubscribeSpecimens = GetAllSpecimen((data) => {
+    setSpecimens(data)
+    setLoading(false) // stop loading after first snapshot
+  })
 
-      setHerbariumContributions(contributionsData)
-      setSummaryContributions(summaryData)
+  // Realtime listener for herbarium contributions
+  const unsubscribeContributions = GetHerbariumContributions(user.id, (data) => {
+    setHerbariumContributions(data)
+  })
 
-    } catch (error) {
-      console.error("Error fetching specimens:", error)
-    } finally {
-      setLoading(false)
-    }
+  // Realtime listener for summary contributions
+  const unsubscribeSummary = GetSummaryContributions(user.id, (data) => {
+    setSummaryContributions(data)
+  })
+
+  // Cleanup listeners on unmount
+  return () => {
+    unsubscribeSpecimens()
+    unsubscribeContributions()
+    unsubscribeSummary()
   }
-
-  fetchData()
 }, [user])
 
 
+
   // Unique families & statuses for filters
-  const families = useMemo(() => Array.from(new Set(specimens.map((s) => s.family))).sort(), [specimens])
+  // Unique families & statuses for filters
+const families = useMemo(
+  () => Array.from(new Set(specimens?.map((s) => s.family || "") || [])).filter(Boolean).sort(),
+  [specimens]
+)
   const statuses = useMemo(() => Array.from(new Set(specimens.map((s) => s.conservationStatus))).sort(), [specimens])
 
   // Filter & sort specimens

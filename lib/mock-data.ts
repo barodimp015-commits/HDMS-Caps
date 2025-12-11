@@ -50,7 +50,7 @@ export const mockSpecimens: Specimen[] = [
     family: "Sapindaceae",
     genus: "Acer",
     collector: "Dr. Michael Chen",
-    collectionDate: "2024-03-22",
+    collectionDate: "2024-05-22",
     location: {
       country: "United States",
       state: "Michigan",

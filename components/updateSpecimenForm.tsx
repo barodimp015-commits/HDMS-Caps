@@ -17,7 +17,7 @@ import { InteractiveMap } from "@/components/map/picking-map"
 import { reverseGeocode } from "@/lib/geocode"
 import { useRouter, useParams } from "next/navigation"
 import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
-import { GetSpecimen, UpdateSpecimen } from "@/lib/firebase-herbarium"
+import { GetSpecimen,  UpdateSpecimen } from "@/lib/firebase-herbarium"
 import { useAuth } from "@/components/Auth/auth-provider"
 import Loading from "@/app/loading"
 
@@ -52,40 +52,46 @@ export default function UpdateSpecimenForm({ specimenId }: { specimenId: string 
   })
 
   // 🔹 Load Data
-  useEffect(() => {
-    const load = async () => {
-      const data = await GetSpecimen(specimenId as string)
+"use client"
 
-      if (!data) {
-        toast.error("Specimen not found")
-        router.push("/specimens")
-        return
-      }
+useEffect(() => {
+  if (!specimenId) return
 
-      setFormData({
-        scientificName: data.scientificName,
-        commonName: data.commonName,
-        family: data.family,
-        genus: data.genus,
-        collector: data.collector,
-        collectionDate: data.collectionDate,
-        habitat: data.habitat,
-        notes: data.notes || "",
-        conservationStatus: data.conservationStatus,
-        city: data.location.city,
-        state: data.location.state,
-        country: data.location.country,
-        lat: data.location.coordinates.lat.toString(),
-        lng: data.location.coordinates.lng.toString(),
-        imageUrl: data.imageUrl || "",
-      })
+  setLoading(true)
 
-      setPreview(data.imageUrl || null)
-      setLoading(false)
+  const unsubscribe = GetSpecimen(specimenId, (data) => {
+    if (!data) {
+      toast.error("Specimen not found")
+      router.push("/specimens")
+      return
     }
 
-    load()
-  }, [specimenId, router])
+    setFormData({
+      scientificName: data.scientificName || "",
+      commonName: data.commonName || "",
+      family: data.family || "",
+      genus: data.genus || "",
+      collector: data.collector || "",
+      collectionDate: data.collectionDate || "",
+      habitat: data.habitat || "",
+      notes: data.notes || "",
+      conservationStatus: data.conservationStatus || "",
+      city: data.location?.city || "",
+      state: data.location?.state || "",
+      country: data.location?.country || "",
+      lat: data.location?.coordinates?.lat?.toString() || "",
+      lng: data.location?.coordinates?.lng?.toString() || "",
+      imageUrl: data.imageUrl || "",
+    })
+
+    setPreview(data.imageUrl || null)
+    setLoading(false)
+  })
+
+  // Cleanup — stop listener when navigating away
+  return () => unsubscribe()
+
+}, [specimenId, router])
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))

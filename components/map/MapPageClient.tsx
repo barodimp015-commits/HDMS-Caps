@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, Filter, Layers, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { Specimen } from "@/model/Specimen"
+import { useAuth } from "../Auth/auth-provider"
 
 interface Props {
   specimens: Specimen[]
@@ -16,6 +17,7 @@ interface Props {
 
 export default function MapPageClient({ specimens }: Props) {
   const router = useRouter()
+   const { user } = useAuth()
 
   const [selectedFamily, setSelectedFamily] = useState("all")
   const [selectedStatus, setSelectedStatus] = useState("all")
@@ -50,7 +52,9 @@ export default function MapPageClient({ specimens }: Props) {
     : null
 
   const handleSpecimenSelect = (id: string) => setSelectedSpecimen(id)
-  const handleViewSpecimen = (id: string) => router.push(`/specimens/${id}`)
+  const handleViewSpecimen = (id: string,role:string) => router.push(`/${role}/specimens/${id}`)
+
+   
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -215,7 +219,7 @@ export default function MapPageClient({ specimens }: Props) {
                   <Badge className={getStatusColor(selectedSpecimenData.conservationStatus)}>
                     {selectedSpecimenData.conservationStatus}
                   </Badge>
-                  <Button onClick={() => handleViewSpecimen(selectedSpecimenData.id)} className="w-full mt-3" size="sm">
+                  <Button onClick={() => handleViewSpecimen(selectedSpecimenData.id,user?.role || "researcher")} className="w-full mt-3" size="sm">
                     <Eye className="h-4 w-4 mr-2" />
                     View Full Details
                   </Button>

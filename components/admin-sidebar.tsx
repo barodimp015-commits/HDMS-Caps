@@ -77,7 +77,13 @@ export function AdminSidebar({ children }: SidebarProps) {
           <div className="flex items-center justify-between p-6 border-b border-sidebar-border">
             <div className="flex items-center space-x-2">
               <div className="p-2 bg-sidebar-primary/10 rounded-lg">
-                <Leaf className="h-5 w-5 text-sidebar-primary" />
+                  <Image
+                  src="/logo/icon.png"
+                  alt="Logo"
+                  width={40}
+                  height={40}
+                  priority
+                />
               </div>
               <span className="text-lg font-bold font-space-grotesk text-sidebar-foreground">MSU Herbarium</span>
             </div>

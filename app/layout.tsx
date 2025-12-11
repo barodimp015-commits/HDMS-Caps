@@ -20,14 +20,11 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "MSU Herbarium Data Management System",
   description: "Digitizing plant specimens for research, conservation, and education",
-  icons: {
-    icon: "/logo/icon.png",               // default favicon
-    apple: "/logo/icon.png",     // optional for iOS
-    other: [
-      { rel: "icon", url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { rel: "icon", url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-    ],
-  },
+    icons: [
+    { rel: "icon", url: "/logo/logo.png", sizes: "64x64" },
+    { rel: "apple-touch-icon", url: "/logo/logo-180.png", sizes: "180x180" },
+  ],
+
 }
 
 

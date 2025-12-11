@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Leaf, Users, Target, Award, Mail, MapPin, Phone } from "lucide-react"
 import { redirect } from "next/navigation"
+import Image from "next/image"
 
 export default async function AboutPage() {
   const user = await getAuthenticatedUser()
@@ -18,7 +19,13 @@ export default async function AboutPage() {
         <div className="text-center space-y-4">
           <div className="flex justify-center">
             <div className="p-4 bg-primary/10 rounded-full">
-              <Leaf className="h-12 w-12 text-primary" />
+             <Image
+              src="/logo/icon.png"
+              alt="Logo"
+              width={40}
+              height={40}
+              priority
+            />
             </div>
           </div>
           <h1 className="text-4xl font-bold font-space-grotesk text-foreground">About MSU Herbarium</h1>
