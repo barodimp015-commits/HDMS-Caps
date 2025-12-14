@@ -15,6 +15,16 @@ import {
 } from "@/config/firebase"
 import { format } from "date-fns"
 
+export type AdminUser = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  role: "researcher" | "admin"
+  status: "Active" | "Pending" | "Inactive"
+  lastLogin: string
+}
+
 // Get all users or filter by role
 export const getUsers = async (role?: string): Promise<ResearcherData[]> => {
   try {
@@ -75,3 +85,44 @@ export const getUsers = async (role?: string): Promise<ResearcherData[]> => {
   }
 };
 
+export const getAllUsers = async (
+  role?: "researcher" | "admin" | "all"
+): Promise<AdminUser[]> => {
+  try {
+    let q
+
+    if (role && role !== "all") {
+      q = query(
+        collection(db, "users"),
+        where("role", "==", role),
+        orderBy("createdAt", "desc")
+      )
+    } else {
+      q = query(
+        collection(db, "users"),
+        orderBy("createdAt", "desc")
+      )
+    }
+
+    const snap = await getDocs(q)
+
+    return snap.docs.map((docSnap) => {
+      const data = docSnap.data()
+
+      return {
+        id: docSnap.id,
+        firstName: data.firstName ?? "",
+        lastName: data.lastName ?? "",
+        email: data.email,
+        role: data.role,
+        status: data.status ?? "Pending",
+        lastLogin: data.lastLogin
+          ? format(data.lastLogin.toDate(), "yyyy-MM-dd HH:mm")
+          : "Never",
+      }
+    })
+  } catch (err) {
+    console.error("Error fetching users:", err)
+    return []
+  }
+}

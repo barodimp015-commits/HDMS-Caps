@@ -96,3 +96,18 @@ export async function GetCollectionTrendData() {
     }))
     .sort((a, b) => a.year - b.year)
 }
+
+export async function GetAllSpecimen(): Promise<Specimen[]> {
+  try {
+    const specimenRef = collection(db, "specimen")
+    const snapshot = await getDocs(specimenRef)
+
+    return snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+    })) as unknown as Specimen[]
+  } catch (error) {
+    console.error("Error fetching specimens:", error)
+    return []
+  }
+}

@@ -71,19 +71,41 @@ export default function AddSpecimenForm() {
 
   
   const errorClass = "border-red-500 focus-visible:ring-red-500"
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
+const validateForm = () => {
+  const newErrors: Record<string, string> = {}
 
-    if (!formData.scientificName.trim()) newErrors.scientificName = "Scientific name is required"
-    if (!formData.commonName.trim()) newErrors.commonName = "Common name is required"
-    if (!formData.family.trim()) newErrors.family = "Family is required"
-    if (!formData.genus.trim()) newErrors.genus = "Genus is required"
-    if (!formData.habitat.trim()) newErrors.habitat = "Habitat is required"
-    if (!formData.conservationStatus) newErrors.conservationStatus = "Conservation status is required"
+  if (!formData.scientificName.trim())
+    newErrors.scientificName = "Scientific name is required"
 
+  if (!formData.commonName.trim())
+    newErrors.commonName = "Common name is required"
 
-    return newErrors
-  }
+  if (!formData.family.trim())
+    newErrors.family = "Family is required"
+
+  if (!formData.genus.trim())
+    newErrors.genus = "Genus is required"
+
+  if (!formData.collectionDate)
+    newErrors.collectionDate = "Collection date is required"
+
+  if (!formData.location.country)
+    newErrors.country = "Please pick a location from the map"
+
+  if (!formData.location.state)
+    newErrors.state = "Province is required"
+
+  if (!formData.location.city)
+    newErrors.city = "City / Municipality is required"
+
+  if (!formData.habitat.trim())
+    newErrors.habitat = "Habitat is required"
+
+  if (!formData.conservationStatus)
+    newErrors.conservationStatus = "Conservation status is required"
+
+  return newErrors
+}
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -155,7 +177,8 @@ export default function AddSpecimenForm() {
         ...formData,
         imageUrl: imageUrl || "",
         researcherId: user?.id ?? null,
-         collector: `${user?.firstName} ${user?.lastName}`
+         collector: `${user?.firstName} ${user?.lastName}`,
+         status: "pending",
       }
 
       const id = await AddNewSpecimen(specimenData)
@@ -194,6 +217,7 @@ export default function AddSpecimenForm() {
         <div>
           <label className="text-sm font-medium">Country</label>
           <Input
+           required
             value={formData.location.country}
             disabled
             className={errors.country ? errorClass : ""}
@@ -206,6 +230,7 @@ export default function AddSpecimenForm() {
         <div>
           <label className="text-sm font-medium">Province</label>
           <Input
+           required
             value={formData.location.state}
             disabled
             className={errors.state ? errorClass : ""}
@@ -216,6 +241,7 @@ export default function AddSpecimenForm() {
         <div>
           <label className="text-sm font-medium">City / Municipality</label>
           <Input
+           required
             value={formData.location.city}
             disabled
             className={errors.county ? errorClass : ""}
@@ -229,6 +255,7 @@ export default function AddSpecimenForm() {
         <div>
           <label className="text-sm font-medium">Scientific Name</label>
           <Input
+           required
             value={formData.scientificName}
             onChange={(e) => handleChange("scientificName", e.target.value)}
             className={errors.scientificName ? errorClass : ""}
@@ -239,6 +266,7 @@ export default function AddSpecimenForm() {
         <div>
           <label className="text-sm font-medium">Common Name</label>
           <Input
+           required
             value={formData.commonName}
             onChange={(e) => handleChange("commonName", e.target.value)}
             className={errors.commonName ? errorClass : ""}
@@ -251,6 +279,7 @@ export default function AddSpecimenForm() {
         <div>
           <label className="text-sm font-medium">Family</label>
           <Input
+           required
             value={formData.family}
             onChange={(e) => handleChange("family", e.target.value)}
             className={errors.family ? errorClass : ""}
@@ -261,6 +290,7 @@ export default function AddSpecimenForm() {
         <div>
           <label className="text-sm font-medium">Genus</label>
           <Input
+           required
             value={formData.genus}
             onChange={(e) => handleChange("genus", e.target.value)}
             className={errors.genus ? errorClass : ""}
@@ -272,6 +302,7 @@ export default function AddSpecimenForm() {
       <div>
         <label className="text-sm font-medium">Collection Date</label>
         <Input
+         required
           type="date"
           value={formData.collectionDate}
           onChange={(e) => handleChange("collectionDate", e.target.value)}
@@ -326,6 +357,7 @@ export default function AddSpecimenForm() {
       <div>
         <label className="text-sm font-medium">Habitat</label>
         <Textarea
+         required
           value={formData.habitat}
           onChange={(e) => handleChange("habitat", e.target.value)}
           className={errors.habitat ? errorClass : ""}
@@ -338,6 +370,7 @@ export default function AddSpecimenForm() {
       <div className="space-y-2">
         <label className="text-sm font-medium">Additional Notes</label>
         <Textarea
+         required
           value={formData.notes}
           onChange={(e) => handleChange("notes", e.target.value)}
           rows={4}

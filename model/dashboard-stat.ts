@@ -6,5 +6,8 @@ export interface DashboardStats {
   userMonth:number
   specimenMonth: number;
   systemStatus: string;
+  plantFamilies: number
+  collectionSites: number
+  activeCollectors: number
 }
 
