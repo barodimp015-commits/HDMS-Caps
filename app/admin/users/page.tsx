@@ -37,16 +37,9 @@ import {
 import { Plus, Search, MoreHorizontal, UserCheck, Mail, Pencil, Trash2, Eye, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/components/Auth/auth-provider"
+import type {Userdata} from "@/model/user"
 
-type User = {
-  id: number
-  firstName: string
-  lastName: string
-  email: string
-  role: "researcher" | "admin"
-  status: "Active" | "Pending" | "Inactive"
-  lastLogin: string
-}
+
 
 type RegisterForm = {
   firstName: string
@@ -60,44 +53,22 @@ type RegisterForm = {
 export default function AdminUsersPage() {
   const { register } = useAuth()
   const { toast } = useToast()
-  const [users, setUsers] = useState<User[]>([
+  const [users, setUsers] = useState<Userdata[]>([
     {
-      id: 1,
+      id: "",
       firstName: "",
-      lastName: "Johnson",
-      email: "sarah.johnson@msu.edu",
-      role: "researcher",
-      status: "Active",
-      lastLogin: "2 hours ago",
+      lastName: "",
+      email: "",
+      role: "",
+      status: "",
+      lastLogin: "",
+      createdAt: '',
     },
-    {
-      id: 2,
-      firstName: "Michael",
-      lastName: "Chen",
-      email: "michael.chen@msu.edu",
-      role: "researcher",
-      status: "Active",
-      lastLogin: "1 day ago",
-    },
-    {
-      id: 3,
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@msu.edu",
-      role: "researcher",
-      status: "Pending",
-      lastLogin: "Never",
-    },
-    {
-      id: 4,
-      firstName: "Admin",
-      lastName: "User",
-      email: "admin@msu.edu",
-      role: "admin",
-      status: "Active",
-      lastLogin: "Now",
-    },
+    
   ])
+  
+
+  
 
   const [registerForm, setRegisterForm] = useState<RegisterForm>({
     firstName: "",
