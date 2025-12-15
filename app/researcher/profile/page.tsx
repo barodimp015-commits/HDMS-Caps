@@ -58,7 +58,8 @@ const [researcher, setResearcher] = useState<ResearcherData>({
   collaborators: 0,
   activeFunding: '',
   researchFocus: '',
-  createdAt: ''
+  createdAt: '',
+  updateAt:''
 
 })
 

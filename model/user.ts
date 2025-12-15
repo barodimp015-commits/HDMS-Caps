@@ -14,9 +14,10 @@ export interface Userdata {
   email: string
   role: string
   createdAt: string
-  status?: string | null
-  lastLogin?: string | null
+  status?: string 
+  lastLogin?: string 
   profilePhoto?: string
+  updateAt:string
 }
 
 

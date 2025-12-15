@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -37,6 +37,7 @@ import {
 import { Plus, Search, MoreHorizontal, UserCheck, Mail, Pencil, Trash2, Eye, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/components/Auth/auth-provider"
+import { deleteUser,getAllUsers,updateUser } from "@/lib/admin-firebase/users"
 import type {Userdata} from "@/model/user"
 
 
@@ -53,19 +54,7 @@ type RegisterForm = {
 export default function AdminUsersPage() {
   const { register } = useAuth()
   const { toast } = useToast()
-  const [users, setUsers] = useState<Userdata[]>([
-    {
-      id: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      role: "",
-      status: "",
-      lastLogin: "",
-      createdAt: '',
-    },
-    
-  ])
+  const [users, setUsers] = useState<Userdata[]>([])
   
 
   
@@ -78,9 +67,10 @@ export default function AdminUsersPage() {
     confirmPassword: "",
     role: "researcher",
   })
+  
 
-  const [editingUser, setEditingUser] = useState<User | null>(null)
-  const [deleteUserId, setDeleteUserId] = useState<number | null>(null)
+  const [editingUser, setEditingUser] = useState<Userdata | null>(null)
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [roleFilter, setRoleFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
@@ -93,13 +83,23 @@ export default function AdminUsersPage() {
   // Filter users based on search and filters
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesRole = roleFilter === "all" || user.role === roleFilter
-    const matchesStatus = statusFilter === "all" || user.status.toLowerCase() === statusFilter
+    const matchesStatus = statusFilter === "all" || user.status?.toLowerCase() === statusFilter
     return matchesSearch && matchesRole && matchesStatus
   })
+
+
+  useEffect(() => {
+  const fetchUsers = async () => {
+    const data = await getAllUsers("all")
+    setUsers(data)
+  }
+
+  fetchUsers()
+}, [])
 
   // Validate form
   const validateForm = (form: RegisterForm, isEdit = false): boolean => {
@@ -150,14 +150,16 @@ const handleAddUser = async () => {
   if (!success) return
 
   // Optional: keep UI list in sync (temporary, until Firestore fetch)
-  const newUser: User = {
-    id: Math.max(...users.map((u) => u.id), 0) + 1,
+  const newUser: Userdata = {
+    id: crypto.randomUUID(), // ✅ string
     firstName: registerForm.firstName,
     lastName: registerForm.lastName,
     email: registerForm.email,
     role: registerForm.role,
     status: "Pending", // email verification
     lastLogin: "Never",
+    createdAt: "",
+    updateAt:""
   }
 
   setUsers([...users, newUser])
@@ -177,66 +179,94 @@ const handleAddUser = async () => {
 
 
   // Edit user
-  const handleEditUser = () => {
-    if (!editingUser) return
+const handleEditUser = async () => {
+  if (!editingUser) return
 
-    if (
-      !validateForm(
-        {
-          firstName: editingUser.firstName,
-          lastName: editingUser.lastName,
-          email: editingUser.email,
-          password: "",
-          confirmPassword: "",
-          role: editingUser.role,
-        },
-        true,
-      )
-    ) {
-      return
-    }
+  const success = await updateUser(editingUser.id, {
+    firstName: editingUser.firstName,
+    lastName: editingUser.lastName,
+    email: editingUser.email,
+    role: editingUser.role,
+    status: editingUser.status,
+    updateAt:editingUser.updateAt
+  })
 
-    setUsers(users.map((u) => (u.id === editingUser.id ? editingUser : u)))
-    setIsEditDialogOpen(false)
-    setEditingUser(null)
-
+  if (!success) {
     toast({
-      title: "User updated successfully",
-      description: `${editingUser.firstName} ${editingUser.lastName}'s information has been updated.`,
-    })
-  }
-
-  // Delete user
-  const handleDeleteUser = () => {
-    if (deleteUserId === null) return
-
-    const user = users.find((u) => u.id === deleteUserId)
-    setUsers(users.filter((u) => u.id !== deleteUserId))
-    setDeleteUserId(null)
-
-    toast({
-      title: "User deleted",
-      description: `${user?.firstName} ${user?.lastName} has been removed from the system.`,
+      title: "Update failed",
+      description: "Could not update user.",
       variant: "destructive",
     })
+    return
   }
 
-  // Toggle user status
-  const toggleUserStatus = (userId: number) => {
-    setUsers(
-      users.map((user) => {
-        if (user.id === userId) {
-          const newStatus = user.status === "Active" ? "Inactive" : "Active"
-          toast({
-            title: `User ${newStatus.toLowerCase()}`,
-            description: `${user.firstName} ${user.lastName} is now ${newStatus.toLowerCase()}.`,
-          })
-          return { ...user, status: newStatus }
-        }
-        return user
-      }),
-    )
+  setUsers((prev) =>
+    prev.map((u) => (u.id === editingUser.id ? editingUser : u)),
+  )
+
+  toast({
+    title: "User updated",
+    description: `${editingUser.firstName} ${editingUser.lastName} updated.`,
+  })
+
+  setIsEditDialogOpen(false)
+  setEditingUser(null)
+}
+
+
+  // Delete user
+const handleDeleteUser = async () => {
+  if (!deleteUserId) return
+
+  const success = await deleteUser(deleteUserId)
+
+  if (!success) {
+    toast({
+      title: "Delete failed",
+      description: "Could not delete user.",
+      variant: "destructive",
+    })
+    return
   }
+
+  setUsers((prev) => prev.filter((u) => u.id !== deleteUserId))
+  setDeleteUserId(null)
+
+  toast({
+    title: "User deleted",
+    variant: "destructive",
+  })
+}
+
+
+  // Toggle user status
+const toggleUserStatus = async (userId: string) => {
+  const user = users.find((u) => u.id === userId)
+  if (!user) return
+
+  const newStatus = user.status === "Active" ? "Inactive" : "Active"
+
+  const success = await updateUser(userId, { status: newStatus })
+
+  if (!success) {
+    toast({
+      title: "Status update failed",
+      variant: "destructive",
+    })
+    return
+  }
+
+  setUsers((prev) =>
+    prev.map((u) =>
+      u.id === userId ? { ...u, status: newStatus } : u,
+    ),
+  )
+
+  toast({
+    title: `User ${newStatus}`,
+    description: `${user.firstName} is now ${newStatus.toLowerCase()}.`,
+  })
+}
 
   return (
     <div className="space-y-6 p-6">
@@ -429,8 +459,8 @@ const handleAddUser = async () => {
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-semibold text-primary">
-                        {user.firstName[0]}
-                        {user.lastName[0]}
+                        {user.firstName?.[0].toUpperCase()}
+                        {user.lastName?.[0].toUpperCase()}
                       </span>
                     </div>
                     <div>
