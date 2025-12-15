@@ -20,8 +20,7 @@ const navigation = [
   { name: "Map", href: "/admin/map", icon: MapPin },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
   { name: "User Management", href: "/admin/users", icon: Users },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
-  { name: "About", href: "/about", icon: Info },
+
 ]
 
 

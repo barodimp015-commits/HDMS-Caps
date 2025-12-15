@@ -1,7 +1,8 @@
 // Dashboard stats interface
 export interface DashboardStats {
   totalUsers: number;
-  pendingResearcherCount: number;
+  ActiveResearcherCount: number;
+  PendingResearcherCount:number;
   totalSpecimens: number;
   userMonth:number
   specimenMonth: number;
@@ -11,3 +12,12 @@ export interface DashboardStats {
   activeCollectors: number
 }
 
+
+
+export interface Activity {
+  id: string;
+  title: string;
+  description: string;
+  timestamp: Date; // after conversion from Firestore Timestamp
+  type: string;
+}

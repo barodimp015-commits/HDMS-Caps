@@ -3,14 +3,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Users, Database, FileCheck, Settings, BarChart3, Plus } from "lucide-react"
-import { getDashboardStats } from "@/lib/admin-firebase/dashboard-stat"
+import { getDashboardStats, getRecentActivities, getSystemStatus,formatActivity } from "@/lib/admin-firebase/dashboard-stat"
 
 // Import the StatCard from client component
 import StatCard from "@/components/dashboard/stat-card"
+import QuickActionsDropdown from "@/components/dashboard/quick-actions-dropdown"
 
 export default async function DashboardPage() {
   // 🔥 This runs ONLY on the server (SSR data fetching)
   const stats = await getDashboardStats()
+    const system = await getSystemStatus();   // fetch system status
+  const rawActivities = await getRecentActivities(5);
+  const activities = rawActivities.map(formatActivity);
+
+
+    console.log(system)
 
   return (
     <div className="space-y-8">
@@ -24,10 +31,7 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <Button size="lg" className="gap-2">
-          <Plus className="h-4 w-4" />
-          Quick Actions
-        </Button>
+         <QuickActionsDropdown />
       </div>
 
       {/* Stats Row */}
@@ -40,9 +44,9 @@ export default async function DashboardPage() {
           />
 
           <StatCard
-            title="Pending Researcher"
-            value={stats.pendingResearcherCount}
-            subtitle="Awaiting approval"
+            title="Active Researcher"
+            value={stats.ActiveResearcherCount}
+            subtitle="Currently active"
             icon="FileCheck"
           />
 
@@ -63,78 +67,117 @@ export default async function DashboardPage() {
       </div>
 
       {/* Lower Section */}
+     {/* Lower Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        
         {/* Recent Activity */}
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Latest system actions & events</CardDescription>
           </CardHeader>
-
           <CardContent>
             <div className="space-y-4">
-              {[
-                {
-                  color: "bg-green-500",
-                  title: "New specimen approved",
-                  desc: "Trillium grandiflorum by researcher@msu.edu",
-                  time: "2 min ago",
-                },
-                {
-                  color: "bg-blue-500",
-                  title: "New user registered",
-                  desc: "john.doe@msu.edu requested researcher access",
-                  time: "1 hour ago",
-                },
-                {
-                  color: "bg-yellow-500",
-                  title: "Specimen pending review",
-                  desc: "Quercus alba submitted for approval",
-                  time: "3 hours ago",
-                },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center space-x-4">
-                  <div className={`w-2 h-2 rounded-full ${item.color}`} />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+              {activities.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No recent activity.
+                </p>
+              ) : (
+                activities.map((item) => (
+                  <div key={item.id} className="flex items-center space-x-4">
+                    <div className={`w-2 h-2 rounded-full ${item.color}`} />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.description}</p>
+                    </div>
+                    <Badge variant="secondary">{item.time}</Badge>
                   </div>
-                  <Badge variant="secondary">{item.time}</Badge>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
+        <Card className="col-span-3 border-border/50 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  System Insights
+                </CardTitle>
+                <CardDescription>Real-time system status & notifications</CardDescription>
+              </CardHeader>
 
-        {/* Admin Tools */}
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Admin Tools</CardTitle>
-            <CardDescription>Quick access to admin controls</CardDescription>
-          </CardHeader>
+              <CardContent className="space-y-4">
+                {/* System Performance */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">System Performance</span>
+                    <Badge
+                      variant="outline"
+                      className="bg-green-500/10 text-green-600 border-green-500/20"
+                    >
+                      {system.systemPerformance}
+                    </Badge>
+                  </div>
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
+                      style={{ width: system.databaseLoad + "%" }}
+                    />
+                  </div>
+                </div>
 
-          <CardContent className="space-y-3">
-            {[
-              { icon: Users, label: "Manage Users" },
-              { icon: FileCheck, label: "Review Approvals" },
-              { icon: Database, label: "Specimen Management" },
-              { icon: BarChart3, label: "Generate Reports" },
-              { icon: Settings, label: "System Settings" },
-            ].map((tool, i) => (
-              <Button
-                key={i}
-                variant="outline"
-                className="w-full justify-start gap-2 hover:bg-accent"
-              >
-                <tool.icon className="h-4 w-4" />
-                {tool.label}
-              </Button>
-            ))}
-          </CardContent>
-        </Card>
+                {/* Database Load */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Database Load</span>
+                    <span className="text-sm font-medium">{system.databaseLoad}%</span>
+                  </div>
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-blue-500 to-cyan-500"
+                      style={{ width: system.databaseLoad + "%" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Storage Usage */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Storage Used</span>
+                    <span className="text-sm font-medium">{system.storageUsed}%</span>
+                  </div>
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-orange-500 to-amber-500"
+                      style={{ width: system.storageUsed + "%" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Notifications */}
+                <div className="pt-4 space-y-3 border-t">
+                  <div className="flex items-start gap-3 p-3 bg-blue-500/5 border border-blue-500/10 rounded-lg">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5" />
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">{stats.PendingResearcherCount} pending approvals</p>
+                      <p className="text-xs text-muted-foreground">
+                        Review required for new researchers
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-amber-500/5 border border-amber-500/10 rounded-lg">
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5" />
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">Backup scheduled</p>
+                      <p className="text-xs text-muted-foreground">Next backup in {system.nextBackup}</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
       </div>
 
     </div>
   )
 }
+

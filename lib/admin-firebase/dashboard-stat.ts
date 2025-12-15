@@ -12,10 +12,48 @@ import {
   deleteDoc,
   query, 
   where ,
-  orderBy
+  orderBy,
+  limit
 } from "@/config/firebase"
-import { format } from "date-fns"
+import { formatDistanceToNow } from "date-fns";
+import { Activity } from "@/model/dashboard-stat";
 
+
+
+
+
+export function formatActivity(activity: Activity) {
+  const typeColors: Record<string, string> = {
+    specimen_approved: "bg-green-500",
+    user_registered: "bg-blue-500",
+    specimen_pending: "bg-yellow-500",
+  };
+
+  return {
+    ...activity,
+    color: typeColors[activity.type] || "bg-gray-500",
+    time: formatDistanceToNow(activity.timestamp, { addSuffix: true }), // timestamp is Date
+  };
+}
+
+export async function getRecentActivities(limitCount = 5): Promise<Activity[]> {
+  const activitiesRef = collection(db, "activities");
+  const q = query(activitiesRef, orderBy("timestamp", "desc"), limit(limitCount));
+  const snapshot = await getDocs(q);
+
+  const activities: Activity[] = snapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      title: data.title,
+      description: data.description,
+      timestamp: data.timestamp.toDate(), // <-- convert Firestore Timestamp to JS Date
+      type: data.type,
+    };
+  });
+
+  return activities;
+}
 
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {
@@ -28,16 +66,23 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
     const usersSnap = await getDocs(collection(db, "users"))
     const totalUsers = usersSnap.size
 
-    let pendingResearcherCount = 0
+    let ActiveResearcherCount = 0
+    
+    let PendingResearcherCount = 0
+    
     const researcherIds = new Set<string>()
 
     usersSnap.forEach((doc) => {
       const data = doc.data()
       if (data.role === "researcher") {
         researcherIds.add(doc.id)
-        if (data.status === "pending") {
-          pendingResearcherCount++
+        if (data.status === "Active") {
+          ActiveResearcherCount++
         }
+        if (data.status === "Pending") {
+          PendingResearcherCount++
+        }
+        
       }
     })
 
@@ -90,7 +135,8 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
     return {
       totalUsers,
       userMonth,
-      pendingResearcherCount,
+      ActiveResearcherCount,
+      PendingResearcherCount,
       totalSpecimens,
       specimenMonth,
       plantFamilies,
@@ -104,7 +150,8 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
     return {
       totalUsers: 0,
       userMonth: 0,
-      pendingResearcherCount: 0,
+      ActiveResearcherCount: 0,
+      PendingResearcherCount: 0,
       totalSpecimens: 0,
       specimenMonth: 0,
       plantFamilies: 0,
@@ -114,3 +161,46 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
     }
   }
 }
+
+function calculateSystemPerformance(databaseLoad: number, storageUsed: number) {
+  if (databaseLoad < 50 && storageUsed < 50) return "Excellent";
+  if (databaseLoad < 80 && storageUsed < 80) return "Good";
+  if (databaseLoad < 95 && storageUsed < 95) return "Warning";
+  return "Critical";
+}
+
+export async function getSystemStatus() {
+  const collections = ["users", "specimen","Activities"]; // all main collections
+    let totalDocs = 0;
+
+      for (const col of collections) {
+    const snapshot = await getDocs(collection(db, col));
+    totalDocs += snapshot.size;
+  }
+  const maxDocs = 1000; // define max expected capacity
+ const loadPercent = (totalDocs / maxDocs) * 100;
+ 
+
+
+ // Determine system performance
+
+
+      const avgDocSizeKB = 1; // estimate each doc size
+      const firestoreUsedKB = totalDocs * avgDocSizeKB;
+      const firestoreMaxKB = 10000; // arbitrary quota for % calculation
+      const firestorePercent = Math.min(100, (firestoreUsedKB / firestoreMaxKB) * 100);
+
+  const systemPerformance = calculateSystemPerformance(loadPercent, firestorePercent);
+
+
+    return {
+      systemPerformance: systemPerformance,
+      databaseLoad: loadPercent,
+      storageUsed: firestorePercent,
+      pendingApprovals: 0,
+      nextBackup: "N/A",
+    };
+
+}
+
+
