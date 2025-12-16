@@ -177,7 +177,7 @@ const validateForm = () => {
       const specimenData = {
         ...formData,
         imageUrl: imageUrl || "",
-        researcherId: user?.id ?? null,
+        researcherId: user?.id || "",
          collector: `${user?.firstName} ${user?.lastName}`,
          status: "pending",
          updatedAt:''
