@@ -26,7 +26,7 @@ export function DeleteConfirmationModal({ open, onConfirm, onCancel ,}: DeleteCo
             Cancel
           </Button>
 
-          <Button variant="destructive" onClick={onConfirm}>
+          <Button variant="destructive" onClick={onConfirm} className="text-white">
             Yes, Delete
           </Button>
         </DialogFooter>

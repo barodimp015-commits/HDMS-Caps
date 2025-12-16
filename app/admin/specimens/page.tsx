@@ -11,12 +11,16 @@ import { GetAllSpecimen, GetHerbariumContributions, GetSummaryContributions } fr
 import { Specimen } from "@/model/Specimen"
 import { ViewMode, SortField, SortOrder } from "@/model/Specimen"
 import Loading from "./loading"
+import { Button } from "@/components/ui/button"
+import { Leaf } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 
 
 
 export default function AdminSpecimensPage() {
-
+  const router = useRouter()
+  
     const [specimens, setSpecimens] = useState<Specimen[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFamily, setSelectedFamily] = useState("all")
@@ -108,8 +112,19 @@ const families = useMemo(
 
 return(
   <div className="space-y-6">
+    <div className="items-center justify-between flex">
+      
+        
+    
            {/* Header */}
            <HeaderSection specimenCount={specimens.length} />
+
+      <Button onClick={() => router.push("/admin/specimens/new")}>
+        <Leaf className="mr-2 h-4 w-4" />
+        Add Specimen
+      </Button>
+    </div>
+
  
            {/* Search & Filter */}
            <SearchFilterCard

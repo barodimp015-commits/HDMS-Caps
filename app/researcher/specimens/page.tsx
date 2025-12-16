@@ -21,6 +21,7 @@ import VisitorHomePage from "@/components/visitor"
 
 export default function SpecimensPage() {
   const { user } = useAuth()
+  
 
   // State
   const [specimens, setSpecimens] = useState<Specimen[]>([])
@@ -133,68 +134,79 @@ const families = useMemo(
   }, [specimens, searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
   
 
-  console.log(user, "+++++++++++++++=")
   if (!user) return null
   if (loading) return <Loading /> 
 
+  console.log(user.status,"_____")
+  if (user.status === "Pending" || user.status === "Inactive") {
+    return <VisitorHomePage />
+  }
 
-  return user.status === "Active" ? (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* LEFT COLUMN – FEED */}
-      <div className="lg:col-span-2 space-y-6">
-        <div className="space-y-6">
-          <HeaderSection specimenCount={specimens.length} />
-          <SearchFilterCard
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            families={families}
-            selectedFamily={selectedFamily}
-            setSelectedFamily={setSelectedFamily}
-            statuses={statuses}
-            selectedStatus={selectedStatus}
-            setSelectedStatus={setSelectedStatus}
-            sortField={sortField}
-            setSortField={setSortField}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-          />
-          <ViewControls
-            filteredCount={filteredSpecimens.length}
-            totalCount={specimens.length}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            onClearFilters={() => {
-              setSearchQuery("")
-              setSelectedFamily("all")
-              setSelectedStatus("all")
-            }}
-            isFiltering={!!searchQuery || selectedFamily !== "all" || selectedStatus !== "all"}
-          />
-          <ActiveFilters
-            searchQuery={searchQuery}
-            selectedFamily={selectedFamily}
-            selectedStatus={selectedStatus}
-            clearSearch={() => setSearchQuery("")}
-            clearFamily={() => setSelectedFamily("all")}
-            clearStatus={() => setSelectedStatus("all")}
-          />
-          <SpecimenResults
-            filteredSpecimens={filteredSpecimens}
-            allSpecimens={specimens}
-            viewMode={viewMode}
-            userRole={user.role}
-          />
-        </div>
-      </div>
 
-      {/* RIGHT COLUMN – CARDS */}
-      <div className="lg:col-span-1 space-y-6">
-        <SubmitSpecimensCard />
-        <ContributionSummaryCard contributions={[summaryContributions]} />
-        <HerbariumContributionsCard contributions={herbariumContributions} />
+return (
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {/* LEFT COLUMN – FEED */}
+    <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6">
+        <HeaderSection specimenCount={specimens.length} />
+
+        <SearchFilterCard
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          families={families}
+          selectedFamily={selectedFamily}
+          setSelectedFamily={setSelectedFamily}
+          statuses={statuses}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
+          sortField={sortField}
+          setSortField={setSortField}
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+        />
+
+        <ViewControls
+          filteredCount={filteredSpecimens.length}
+          totalCount={specimens.length}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          onClearFilters={() => {
+            setSearchQuery("")
+            setSelectedFamily("all")
+            setSelectedStatus("all")
+          }}
+          isFiltering={
+            !!searchQuery ||
+            selectedFamily !== "all" ||
+            selectedStatus !== "all"
+          }
+        />
+
+        <ActiveFilters
+          searchQuery={searchQuery}
+          selectedFamily={selectedFamily}
+          selectedStatus={selectedStatus}
+          clearSearch={() => setSearchQuery("")}
+          clearFamily={() => setSelectedFamily("all")}
+          clearStatus={() => setSelectedStatus("all")}
+        />
+
+        <SpecimenResults
+          filteredSpecimens={filteredSpecimens}
+          allSpecimens={specimens}
+          viewMode={viewMode}
+          userRole={user.role}
+        />
       </div>
     </div>
-  ) : (
-    <VisitorHomePage />
-  )
+
+    {/* RIGHT COLUMN – CARDS */}
+    <div className="lg:col-span-1 space-y-6">
+      <SubmitSpecimensCard />
+      <ContributionSummaryCard contributions={[summaryContributions]} />
+      <HerbariumContributionsCard contributions={herbariumContributions} />
+    </div>
+  </div>
+)
+
 }

@@ -6,7 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import {
-  Leaf, LayoutDashboard, Database, MapPin, BarChart3,
+  Leaf, LayoutDashboard, Database, MapPin, BarChart3, Archive,
   Info, LogOut, Menu, X, Users, Settings
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,8 @@ const navigation = [
   { name: "Map", href: "/admin/map", icon: MapPin },
   { name: "User Management", href: "/admin/users", icon: Users }, 
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
+  { name: "Archives", href: "/admin/archives", icon: Archive },
+
 
 ]
 

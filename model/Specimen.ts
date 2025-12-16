@@ -24,6 +24,8 @@ export interface Specimen {
   notes: string
   createdAt?: string 
   status:string
+  researcherId:string
+  updatedAt:string
 }
 
 export type ViewMode = "grid" | "list"

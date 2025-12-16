@@ -126,6 +126,7 @@ const router = useRouter()
         firstName: data.firstName,
         lastName: data.lastName,
         createdAt: data.createdAt,
+        status:data.status,
          updateAt:data.updateAt,
          lastLogin:data.lastLogin
       }

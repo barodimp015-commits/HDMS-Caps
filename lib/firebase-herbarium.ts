@@ -11,7 +11,8 @@ import {
   query,
   where,
   onSnapshot,
-  getDocs
+  getDocs,
+  setDoc
 } from "@/config/firebase"
 import { format } from "date-fns"
 
@@ -265,5 +266,30 @@ export async function GetAllSpecimenMap(): Promise<Specimen[]> {
   } catch (error) {
     console.error("Error fetching specimens:", error)
     return []
+  }
+}
+export async function archiveSpecimen(specimenId: string): Promise<boolean> {
+  try {
+    const specimenRef = doc(db, "specimen", specimenId)
+    const archiveRef = doc(db, "archive", specimenId)
+
+    const snapshot = await getDoc(specimenRef)
+
+    if (!snapshot.exists()) {
+      console.error("Specimen not found")
+      return false
+    }
+
+    await setDoc(archiveRef, {
+      ...snapshot.data(),
+      archivedAt: serverTimestamp(),
+    })
+
+      await deleteDoc(doc(db, "specimen", specimenId))
+      
+    return true
+  } catch (error) {
+    console.error("Error archiving specimen:", error)
+    return false
   }
 }

@@ -24,10 +24,12 @@ import {
   ChevronRight,
   Download,
   Share,
+  Trash,
 } from "lucide-react"
 import Image from "next/image"
-import { GetSpecimen } from "@/lib/firebase-herbarium"
+import { archiveSpecimen, GetSpecimen } from "@/lib/firebase-herbarium"
 import Loading from "@/app/loading"
+import { toast } from "sonner"
 
 export default function SpecimenDetailsPage({ specimenId }: { specimenId: string }) {
  
@@ -83,6 +85,17 @@ useEffect(() => {
     setIsBookmarked(!isBookmarked)
   }
 
+
+const handleArchive = async () => {
+  const success = await archiveSpecimen(specimenId)
+
+  if (success) {
+    router.push("/researcher/specimens")
+  } else {
+    toast.error("Failed to archive specimen")
+  }
+}
+
 const handleDownload = () => {
   if (!specimen) return;
 
@@ -137,20 +150,10 @@ const handleDownload = () => {
   if (!user) {
     return null
   }
-    
   if (!specimen) {
-    if (loading) return <Loading /> 
-    return (
-    
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-foreground mb-2">Specimen Not Found</h2>
-            <p className="text-muted-foreground mb-4">The requested specimen could not be found.</p>
-            <Button onClick={handleBack}>Go Back</Button>
-          </div>
-        </div>
+   
+    return <Loading /> 
       
-    )
   }
 
 
@@ -181,11 +184,29 @@ const handleDownload = () => {
                 </Button>
               </>
         
-          
-              <Button onClick={() =>    router.push(`/researcher/specimens/${specimenId}/edit`)}className="flex items-center gap-2">
-                <Edit className="h-4 w-4" />
-                Edit Specimen
-              </Button>
+          {specimen.researcherId === user.id && (
+                <>
+                    <Button
+                    variant="destructive"
+                    onClick={handleArchive}
+                    className="flex items-center gap-2 bg-transparent"
+                  >
+                      <Trash className="h-4 w-4" />
+                      Delete
+                    
+                  </Button>
+                  
+                  <Button
+                    onClick={() => router.push(`/researcher/specimens/${specimenId}/edit`)}
+                    className="flex items-center gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Specimen
+                  </Button>
+
+              
+                </>
+             )} 
           </div>
         </div>
 
