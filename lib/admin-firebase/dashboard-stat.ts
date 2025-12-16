@@ -168,39 +168,45 @@ function calculateSystemPerformance(databaseLoad: number, storageUsed: number) {
   if (databaseLoad < 95 && storageUsed < 95) return "Warning";
   return "Critical";
 }
-
 export async function getSystemStatus() {
-  const collections = ["users", "specimen","Activities"]; // all main collections
-    let totalDocs = 0;
+  const collections = ["users", "specimen", "activities"] // 🔧 consistent casing
+  let totalDocs = 0
 
-      for (const col of collections) {
-    const snapshot = await getDocs(collection(db, col));
-    totalDocs += snapshot.size;
+  for (const col of collections) {
+    const snapshot = await getDocs(collection(db, col))
+    totalDocs += snapshot.size
   }
-  const maxDocs = 1000; // define max expected capacity
- const loadPercent = (totalDocs / maxDocs) * 100;
- 
 
+  const maxDocs = 1000
 
- // Determine system performance
+  // ✅ 2 decimal places
+  const loadPercent = Number(
+    ((totalDocs / maxDocs) * 100).toFixed(2)
+  )
 
+  // Firestore usage estimate
+  const avgDocSizeKB = 1
+  const firestoreUsedKB = totalDocs * avgDocSizeKB
+  const firestoreMaxKB = 10000
 
-      const avgDocSizeKB = 1; // estimate each doc size
-      const firestoreUsedKB = totalDocs * avgDocSizeKB;
-      const firestoreMaxKB = 10000; // arbitrary quota for % calculation
-      const firestorePercent = Math.min(100, (firestoreUsedKB / firestoreMaxKB) * 100);
+  // ✅ 2 decimal places + cap at 100
+  const firestorePercent = Number(
+    Math.min(100, (firestoreUsedKB / firestoreMaxKB) * 100).toFixed(2)
+  )
 
-  const systemPerformance = calculateSystemPerformance(loadPercent, firestorePercent);
+  const systemPerformance = calculateSystemPerformance(
+    loadPercent,
+    firestorePercent
+  )
 
-
-    return {
-      systemPerformance: systemPerformance,
-      databaseLoad: loadPercent,
-      storageUsed: firestorePercent,
-      pendingApprovals: 0,
-      nextBackup: "N/A",
-    };
-
+  return {
+    systemPerformance,
+    databaseLoad: loadPercent,   // e.g. 23.45
+    storageUsed: firestorePercent, // e.g. 12.34
+    pendingApprovals: 0,
+    nextBackup: "N/A",
+  }
 }
+
 
 

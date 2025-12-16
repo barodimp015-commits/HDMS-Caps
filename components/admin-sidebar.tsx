@@ -18,8 +18,8 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Specimens", href: "/admin/specimens", icon: Database },
   { name: "Map", href: "/admin/map", icon: MapPin },
+  { name: "User Management", href: "/admin/users", icon: Users }, 
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-  { name: "User Management", href: "/admin/users", icon: Users },
 
 ]
 

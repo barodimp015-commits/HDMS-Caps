@@ -16,6 +16,7 @@ import HerbariumContributionsCard from "@/components/specimens-cards/HerbariumCo
 
 import {HerbariumContribution,SummaryContribution} from "@/model/Specimen"
 import Loading from "./loading"
+import VisitorHomePage from "@/components/visitor"
 
 
 export default function SpecimensPage() {
@@ -132,20 +133,17 @@ const families = useMemo(
   }, [specimens, searchQuery, selectedFamily, selectedStatus, sortField, sortOrder])
   
 
+  console.log(user, "+++++++++++++++=")
   if (!user) return null
   if (loading) return <Loading /> 
 
 
-  return (
-     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        {/* LEFT COLUMN – FEED */}
-        <div className="lg:col-span-2 space-y-6">
+  return user.status === "Active" ? (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* LEFT COLUMN – FEED */}
+      <div className="lg:col-span-2 space-y-6">
         <div className="space-y-6">
-          {/* Header */}
           <HeaderSection specimenCount={specimens.length} />
-
-          {/* Search & Filter */}
           <SearchFilterCard
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -160,8 +158,6 @@ const families = useMemo(
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
           />
-
-          {/* View Controls */}
           <ViewControls
             filteredCount={filteredSpecimens.length}
             totalCount={specimens.length}
@@ -174,8 +170,6 @@ const families = useMemo(
             }}
             isFiltering={!!searchQuery || selectedFamily !== "all" || selectedStatus !== "all"}
           />
-
-          {/* Active Filters */}
           <ActiveFilters
             searchQuery={searchQuery}
             selectedFamily={selectedFamily}
@@ -184,8 +178,6 @@ const families = useMemo(
             clearFamily={() => setSelectedFamily("all")}
             clearStatus={() => setSelectedStatus("all")}
           />
-
-          {/* Specimens Grid/List */}
           <SpecimenResults
             filteredSpecimens={filteredSpecimens}
             allSpecimens={specimens}
@@ -193,14 +185,16 @@ const families = useMemo(
             userRole={user.role}
           />
         </div>
-        </div>
-  
-          <div className="lg:col-span-1 space-y-6">
-          <SubmitSpecimensCard />
-         <ContributionSummaryCard contributions={[summaryContributions]} />
-          <HerbariumContributionsCard contributions={herbariumContributions} />
-  
-          </div>
-          </div>
-)
+      </div>
+
+      {/* RIGHT COLUMN – CARDS */}
+      <div className="lg:col-span-1 space-y-6">
+        <SubmitSpecimensCard />
+        <ContributionSummaryCard contributions={[summaryContributions]} />
+        <HerbariumContributionsCard contributions={herbariumContributions} />
+      </div>
+    </div>
+  ) : (
+    <VisitorHomePage />
+  )
 }

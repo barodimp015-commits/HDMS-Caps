@@ -13,6 +13,7 @@ import { toast } from "sonner"
 
 // Import AuthProvider hook
 import { useAuth } from "@/components/Auth/auth-provider"
+import { addNewActivity } from "@/lib/admin-firebase/activities"
 
 interface RegisterModalProps {
   open: boolean
@@ -30,6 +31,7 @@ export function RegisterForm({ open, onOpenChange }: RegisterModalProps) {
     confirmPassword: "",
     agreeToTerms: false,
     role: "researcher",
+    status: "Pending",
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -53,6 +55,8 @@ export function RegisterForm({ open, onOpenChange }: RegisterModalProps) {
       confirmPassword: "",
       agreeToTerms: false,
       role: "researher",
+         status: "Pending",
+      
     })
     setError("")
     setShowPassword(false)
@@ -81,6 +85,8 @@ export function RegisterForm({ open, onOpenChange }: RegisterModalProps) {
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: formData.role,
+        status:formData.status,
+        updateAt:  new Date().toISOString(),
 
         // ✅ Save createdAt to Firebase
         createdAt: new Date().toISOString(),
@@ -90,6 +96,13 @@ export function RegisterForm({ open, onOpenChange }: RegisterModalProps) {
         setError("Registration failed. Please try again.")
         return
       }
+
+          await addNewActivity({
+          title: "New User Registered",
+          description: `${formData.firstName} ${formData.lastName} has registered`,
+          type: "auth",
+          timestamp:''
+        })
 
       toast.success("Registration successful! You can now log in.")
       resetForm()

@@ -15,9 +15,9 @@ export interface DashboardStats {
 
 
 export interface Activity {
-  id: string;
+  id:string
   title: string;
   description: string;
-  timestamp: Date; // after conversion from Firestore Timestamp
   type: string;
+  timestamp:string
 }

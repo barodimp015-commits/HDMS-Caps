@@ -18,7 +18,7 @@ import router from 'next/router'
 import { ResearcherData } from '@/model/user'
 import Link from 'next/link'
 import { Specimen } from "@/model/Specimen"
-import { GetAllSpecimen, GetUserSpecimens } from "@/lib/firebase-herbarium"
+import {  GetUserSpecimens } from "@/lib/firebase-herbarium"
 import Loading from '@/app/loading'
 
 

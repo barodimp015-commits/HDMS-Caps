@@ -1,24 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Dialog,
   DialogContent,
@@ -46,24 +34,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import {
-  Plus,
-  Search,
-  MoreHorizontal,
-  UserCheck,
-  Mail,
-  Pencil,
-  Trash2,
-  Eye,
-  EyeOff,
-} from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { Plus, Search, MoreHorizontal, UserCheck, Mail, Pencil, Trash2, Eye, EyeOff } from "lucide-react"
 import { useAuth } from "@/components/Auth/auth-provider"
-import {
-  deleteUser,
-  updateUser,
-} from "@/lib/admin-firebase/users"
+import { deleteUser, updateUser } from "@/lib/admin-firebase/users"
 import type { Userdata } from "@/model/user"
+import { toast } from "sonner"
+import { addNewActivity } from "@/lib/admin-firebase/activities"
 
 type RegisterForm = {
   firstName: string
@@ -72,6 +48,7 @@ type RegisterForm = {
   password: string
   confirmPassword: string
   role: "researcher" | "admin"
+  status:string
 }
 
 export default function AdminUsersClient({
@@ -80,7 +57,6 @@ export default function AdminUsersClient({
   initialUsers: Userdata[]
 }) {
   const { register } = useAuth()
-  const { toast } = useToast()
 
   const [users, setUsers] = useState<Userdata[]>(initialUsers)
   const [editingUser, setEditingUser] = useState<Userdata | null>(null)
@@ -96,8 +72,7 @@ export default function AdminUsersClient({
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const [formErrors, setFormErrors] =
-    useState<Partial<Record<keyof RegisterForm, string>>>({})
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof RegisterForm, string>>>({})
 
   const [registerForm, setRegisterForm] = useState<RegisterForm>({
     firstName: "",
@@ -106,6 +81,7 @@ export default function AdminUsersClient({
     password: "",
     confirmPassword: "",
     role: "researcher",
+    status:"Pending"
   })
 
   // ---------------- FILTER ----------------
@@ -116,9 +92,7 @@ export default function AdminUsersClient({
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesRole = roleFilter === "all" || user.role === roleFilter
-    const matchesStatus =
-      statusFilter === "all" ||
-      user.status?.toLowerCase() === statusFilter
+    const matchesStatus = statusFilter === "all" || user.status?.toLowerCase() === statusFilter
 
     return matchesSearch && matchesRole && matchesStatus
   })
@@ -138,13 +112,10 @@ export default function AdminUsersClient({
 
     if (!isEdit) {
       if (!form.password) errors.password = "Password is required"
-      else if (form.password.length < 8)
-        errors.password = "Minimum 8 characters"
+      else if (form.password.length < 8) errors.password = "Minimum 8 characters"
 
-      if (!form.confirmPassword)
-        errors.confirmPassword = "Confirm password"
-      else if (form.password !== form.confirmPassword)
-        errors.confirmPassword = "Passwords do not match"
+      if (!form.confirmPassword) errors.confirmPassword = "Confirm password"
+      else if (form.password !== form.confirmPassword) errors.confirmPassword = "Passwords do not match"
     }
 
     setFormErrors(errors)
@@ -162,6 +133,8 @@ export default function AdminUsersClient({
       firstName: registerForm.firstName,
       lastName: registerForm.lastName,
       createdAt: new Date().toISOString(),
+      updateAt: new Date().toISOString(),
+      status:registerForm.status
     })
 
     if (!success) return
@@ -189,6 +162,8 @@ export default function AdminUsersClient({
       password: "",
       confirmPassword: "",
       role: "researcher",
+      status:"Pending"
+
     })
   }
 
@@ -207,16 +182,12 @@ export default function AdminUsersClient({
 
     if (!success) return
 
-    setUsers((prev) =>
-      prev.map((u) => (u.id === editingUser.id ? editingUser : u)),
-    )
+    setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? editingUser : u)))
 
     setIsEditDialogOpen(false)
     setEditingUser(null)
 
-    toast({
-      title: "User updated",
-    })
+    toast.success("User Updated.")
   }
 
   // ---------------- DELETE USER ----------------
@@ -229,10 +200,7 @@ export default function AdminUsersClient({
     setUsers((prev) => prev.filter((u) => u.id !== deleteUserId))
     setDeleteUserId(null)
 
-    toast({
-      title: "User deleted",
-      variant: "destructive",
-    })
+     toast.success("User deleted")
   }
 
   // ---------------- TOGGLE STATUS ----------------
@@ -243,16 +211,47 @@ export default function AdminUsersClient({
     const newStatus = user.status === "Active" ? "Inactive" : "Active"
 
     const success = await updateUser(userId, { status: newStatus })
+
+          await addNewActivity({
+        id:'',    
+        title: "User Status Updated",
+        description: `${user.firstName} ${user.lastName} status changed to ${newStatus}`,
+        type: "auth",
+        timestamp:''
+      })
+    
     if (!success) return
 
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === userId ? { ...u, status: newStatus } : u,
-      ),
-    )
+    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u)))
+    
+     toast.success(`${user.email} status changed to ${newStatus}`)
   }
 
-  /* ========================= UI BELOW (UNCHANGED) ========================= */
+  // ---------------- PAGINATION ----------------
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex)
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }
+
+  const handleRoleFilterChange = (value: string) => {
+    setRoleFilter(value)
+    setCurrentPage(1)
+  }
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value)
+    setCurrentPage(1)
+  }
+
+  /* ========================= UI BELOW ========================= */
 
   return (
     <div className="space-y-6 p-6">
@@ -380,6 +379,8 @@ export default function AdminUsersClient({
                     password: "",
                     confirmPassword: "",
                     role: "researcher",
+                    status:"Pending"
+                    
                   })
                   setFormErrors({})
                 }}
@@ -405,10 +406,10 @@ export default function AdminUsersClient({
                 placeholder="Search by name or email..."
                 className="pl-10"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
               />
             </div>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
@@ -418,7 +419,7 @@ export default function AdminUsersClient({
                 <SelectItem value="researcher">Researcher</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
@@ -436,79 +437,163 @@ export default function AdminUsersClient({
               <p className="text-muted-foreground">No users found matching your criteria.</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {filteredUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-semibold text-primary">
-                        {user.firstName?.[0].toUpperCase()}
-                        {user.lastName?.[0].toUpperCase()}
-                      </span>
+            <>
+              <div className="space-y-4">
+                {paginatedUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-primary">
+                          {user.firstName?.[0].toUpperCase()}
+                          {user.lastName?.[0].toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-semibold">
+                          {user.firstName} {user.lastName}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold">
-                        {user.firstName} {user.lastName}
-                      </p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <div className="flex items-center gap-3">
+                      <Badge variant={user.role === "admin" ? "default" : "secondary"} className="capitalize">
+                        {user.role}
+                      </Badge>
+                      <Badge
+                        variant={
+                          user.status === "Active" ? "default" : user.status === "Pending" ? "secondary" : "destructive"
+                        }
+                      >
+                        {user.status}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground hidden md:inline">{user.lastLogin}</span>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => toggleUserStatus(user.id)}
+                          title="Toggle status"
+                        >
+                          <UserCheck className="h-4 w-4" />
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="sm" variant="outline">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setEditingUser(user)
+                                setIsEditDialogOpen(true)
+                              }}
+                            >
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit User
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setDeleteUserId(user.id)} className="text-destructive">
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete User
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant={user.role === "admin" ? "default" : "secondary"} className="capitalize">
-                      {user.role}
-                    </Badge>
-                    <Badge
-                      variant={
-                        user.status === "Active" ? "default" : user.status === "Pending" ? "secondary" : "destructive"
-                      }
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      Showing {startIndex + 1}-{Math.min(endIndex, filteredUsers.length)} of {filteredUsers.length}
+                    </span>
+                    <Select
+                      value={itemsPerPage.toString()}
+                      onValueChange={(value) => {
+                        setItemsPerPage(Number(value))
+                        setCurrentPage(1)
+                      }}
                     >
-                      {user.status}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground hidden md:inline">{user.lastLogin}</span>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => toggleUserStatus(user.id)}
-                        title="Toggle status"
-                      >
-                        <UserCheck className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline" title="Send email">
-                        <Mail className="h-4 w-4" />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setEditingUser(user)
-                              setIsEditDialogOpen(true)
-                            }}
+                      <SelectTrigger className="w-[100px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">5 / page</SelectItem>
+                        <SelectItem value="10">10 / page</SelectItem>
+                        <SelectItem value="20">20 / page</SelectItem>
+                        <SelectItem value="50">50 / page</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+                      First
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        let pageNum: number
+                        if (totalPages <= 5) {
+                          pageNum = i + 1
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i
+                        } else {
+                          pageNum = currentPage - 2 + i
+                        }
+
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={currentPage === pageNum ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(pageNum)}
+                            className="w-10"
                           >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit User
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setDeleteUserId(user.id)} className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            {pageNum}
+                          </Button>
+                        )
+                      })}
                     </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Last
+                    </Button>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

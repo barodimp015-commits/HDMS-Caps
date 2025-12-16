@@ -20,6 +20,7 @@ import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
 import { AddNewSpecimen } from "@/lib/firebase-herbarium"
 import { useAuth } from "./Auth/auth-provider"
 import Loading from "@/app/loading"
+import { addNewActivity } from "@/lib/admin-firebase/activities"
 
 export default function AddSpecimenForm() {
   const router = useRouter()
@@ -182,8 +183,17 @@ const validateForm = () => {
       }
 
       const id = await AddNewSpecimen(specimenData)
+      
 
       if (id) {
+              // ✅ ADD ACTIVITY LOG
+          await addNewActivity({
+        title: "New Specimen Added",
+        description: `${formData.scientificName} was added by ${user?.firstName} ${user?.lastName}`,
+        type: "specimen",
+        timestamp:''
+      })
+
         toast.success("Specimen added successfully!")
         router.push("/researcher/specimens")
       }

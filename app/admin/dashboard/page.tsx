@@ -7,7 +7,6 @@ import { getDashboardStats, getRecentActivities, getSystemStatus,formatActivity 
 
 // Import the StatCard from client component
 import StatCard from "@/components/dashboard/stat-card"
-import QuickActionsDropdown from "@/components/dashboard/quick-actions-dropdown"
 
 export default async function DashboardPage() {
   // 🔥 This runs ONLY on the server (SSR data fetching)
@@ -31,7 +30,6 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-         <QuickActionsDropdown />
       </div>
 
       {/* Stats Row */}

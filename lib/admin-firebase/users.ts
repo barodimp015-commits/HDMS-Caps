@@ -107,7 +107,7 @@ export const getAllUsers = async (
         status: data.status ?? "Pending",
         createdAt:formatCreatedAt(data.createdAt),
         lastLogin: data.lastLogin
-          ? format(data.lastLogin.toDate(), "yyyy-MM-dd HH:mm")
+          ? formatCreatedAt(data.lastLogin)
           : "Never",
           updateAt:data.updateAt
       }
@@ -172,5 +172,5 @@ const formatCreatedAt = (createdAt: any): string => {
   const date = new Date(createdAt)
   return isNaN(date.getTime())
     ? ""
-    : format(date, "yyyy-MM-dd HH:mm")
+    : format(date, "HH:mm MM-dd-yyyy")
 }

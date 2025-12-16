@@ -17,6 +17,7 @@ import { db, doc, getDoc } from "@/config/firebase"
   
   const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
+     const [status, setStatus] = useState<string | null>(null)
 
   const navItems = [
     { href: "/researcher", label: "home", icon: Home },
@@ -34,6 +35,7 @@ import { db, doc, getDoc } from "@/config/firebase"
       const data = snap.data()
       if (data.profilePhoto) {
         setProfilePhoto(data.profilePhoto)
+        setStatus(data.status)
       }
     }
   }
@@ -66,26 +68,38 @@ import { db, doc, getDoc } from "@/config/firebase"
            
 
             <div className="flex items-center space-x-4">
-               <div className="hidden md:flex items-center space-x-8">
-              {navItems.map((item) => {
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors "
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                )
-              })}
-            </div>
-                <Badge variant="outline" className="hidden sm:flex ">
-                  Researcher
-                </Badge>
-
-            <DropdownMenu>
+              {status === "Active" && (
+                <div className="hidden md:flex items-center space-x-8">
+                  {navItems.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="flex items-center space-x-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+                <Badge
+              variant="outline"
+              className={`hidden sm:flex ${
+                status === "Active"
+                  ? "border-green-500 text-green-600"
+                  : status === "Pending"
+                  ? "border-yellow-500 text-yellow-600"
+                  : status === "Inactive"
+                  ? "border-red-500 text-red-600"
+                  : ""
+              }`}
+            >
+              {status}
+            </Badge>
+              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden cursor-pointer">
                     {profilePhoto ? (
@@ -146,8 +160,8 @@ import { db, doc, getDoc } from "@/config/firebase"
               <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                 {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
-
             </div>
+            
           </div>
 
           {isMenuOpen && (

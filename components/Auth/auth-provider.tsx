@@ -13,7 +13,7 @@ import {
   sendEmailVerification
 } from "firebase/auth"
 
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
 import { toast } from "sonner"
 
 
@@ -28,6 +28,8 @@ interface AuthContextType {
     firstName?: string
     lastName?: string
     createdAt: string
+     updateAt:string
+     status:string
   }) => Promise<boolean>
   logout: () => Promise<void>
   isAuthenticated: boolean
@@ -80,6 +82,8 @@ const router = useRouter()
           firstName: data.firstName,
           lastName: data.lastName,
           createdAt: data.createdAt,
+          updateAt:data.updateAt,
+          status:data.status
         }
 
         saveUser(userObj)
@@ -100,12 +104,18 @@ const router = useRouter()
           return false
         }
 
-
-      const snap = await getDoc(doc(db, "users", fbUser.uid))
+      const userRef = doc(db, "users", fbUser.uid)
+      const snap = await getDoc(userRef)
       if (!snap.exists()) {
         toast.error("User profile not found")
         return false
       }
+
+          const lastLogin = new Date().toISOString()
+          await updateDoc(userRef, {
+            lastLogin,
+          })
+
 
       const data = snap.data()
 
@@ -116,7 +126,10 @@ const router = useRouter()
         firstName: data.firstName,
         lastName: data.lastName,
         createdAt: data.createdAt,
+         updateAt:data.updateAt,
+         lastLogin:data.lastLogin
       }
+
 
     // 3️⃣ Save locally
       saveUser(userObj)
@@ -136,9 +149,11 @@ const router = useRouter()
     firstName?: string
     lastName?: string
     createdAt: string
+     updateAt: string
+     status:string
   }): Promise<boolean> => {
     try {
-      const { email, password, firstName, lastName, role, createdAt } = data
+      const { email, password, firstName, lastName, role, createdAt,status,updateAt } = data
 
       const { user: fbUser } = await createUserWithEmailAndPassword(auth, email, password)
 
@@ -150,6 +165,8 @@ const router = useRouter()
         firstName,
         lastName,
         createdAt, // 🔥 SAVED HERE
+        status,
+         updateAt
       }
 
       await setDoc(doc(db, "users", fbUser.uid), userDoc)
