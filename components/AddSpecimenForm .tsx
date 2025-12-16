@@ -180,6 +180,7 @@ const validateForm = () => {
         researcherId: user?.id ?? null,
          collector: `${user?.firstName} ${user?.lastName}`,
          status: "pending",
+         updatedAt:''
       }
 
       const id = await AddNewSpecimen(specimenData)
@@ -188,11 +189,13 @@ const validateForm = () => {
       if (id) {
               // ✅ ADD ACTIVITY LOG
           await addNewActivity({
+        id:'',      
         title: "New Specimen Added",
         description: `${formData.scientificName} was added by ${user?.firstName} ${user?.lastName}`,
         type: "specimen",
-        timestamp:''
+        timestamp:'',
       })
+      
 
         toast.success("Specimen added successfully!")
         router.push("/researcher/specimens")
