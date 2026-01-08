@@ -20,6 +20,7 @@ export interface Specimen {
   }
   habitat: string
   conservationStatus: string,
+  imageLink:string
   imageUrl: string
   notes: string
   createdAt?: string 

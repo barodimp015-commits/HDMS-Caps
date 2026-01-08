@@ -55,6 +55,7 @@ export default function AddSpecimenForm() {
         lng: 0,
       },
     },
+    imageLink:"",
     habitat: "",
     conservationStatus: "",
     imageUrl: "",
@@ -168,6 +169,7 @@ const validateForm = () => {
 
     try {
       let imageUrl = null
+      let imageLink = ""
 
       if (imageFile) {
         toast.info("Uploading image...")
@@ -177,6 +179,7 @@ const validateForm = () => {
       const specimenData = {
         ...formData,
         imageUrl: imageUrl || "",
+        imageLink: imageLink || "",
         researcherId: user?.id || "",
          collector: `${user?.firstName} ${user?.lastName}`,
          status: "pending",
@@ -206,8 +209,10 @@ const validateForm = () => {
       setLoading(false)
     }
   }
+  
 
   if(loading)return<Loading/>
+  console.log(formData.location.city)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10">
@@ -366,15 +371,24 @@ const validateForm = () => {
         </div>
       </div>
 
-      {/* HABITAT */}
+      {/* GOogle Image Link */}
       <div>
-        <label className="text-sm font-medium">Habitat</label>
+        <label className="text-sm font-medium">Google Image Link (Optional)</label>
+        <Textarea
+          value={formData.imageLink}
+          onChange={(e) => handleChange("imageLink", e.target.value)}
+          placeholder="Paste Google Image URL here"
+        />
+      </div>
+            {/* HABITAT */}
+      <div>
+        <label className="text-sm font-medium">Image Link</label>
         <Textarea
          required
           value={formData.habitat}
           onChange={(e) => handleChange("habitat", e.target.value)}
           className={errors.habitat ? errorClass : ""}
-          placeholder="Describe habitat..."
+          placeholder="Input the Image Link"
         />
         {errors.habitat && <p className="text-red-500 text-xs mt-1">{errors.habitat}</p>}
       </div>

@@ -49,6 +49,7 @@ export default function UpdateSpecimenForm({ specimenId }: { specimenId: string 
     lat: "",
     lng: "",
     imageUrl: "",
+    imageLink:""
   })
 
   // 🔹 Load Data
@@ -82,6 +83,7 @@ useEffect(() => {
       lat: data.location?.coordinates?.lat?.toString() || "",
       lng: data.location?.coordinates?.lng?.toString() || "",
       imageUrl: data.imageUrl || "",
+      imageLink:data.imageLink|| ""
     })
 
     setPreview(data.imageUrl || null)
@@ -194,6 +196,7 @@ useEffect(() => {
             lng: parseFloat(formData.lng),
           },
         },
+        imageLink:formData.imageLink
       }
 
       await UpdateSpecimen(specimenId as string, updatedData)
@@ -310,6 +313,11 @@ useEffect(() => {
           </div>
         )}
       </div>
+      </div>
+      <div>
+        <label className="text-sm font-medium">Google Link Image </label>
+
+      <Textarea value={formData.imageLink} onChange={(e) => handleChange("imageLink", e.target.value)} placeholder="Google image Link" />
       </div>
       <div>
         <label className="text-sm font-medium">Habitat</label>

@@ -76,6 +76,7 @@ export {
   serverTimestamp,
   Timestamp,
   onSnapshot
+  //storage
 }
 
 export default app
