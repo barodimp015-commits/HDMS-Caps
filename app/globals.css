@@ -3,6 +3,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Glass popup */
+.leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.92);
+}
+
 :root {
   /* Updated color tokens to match nature-inspired herbarium design */
   --background: oklch(1 0 0);
@@ -76,6 +88,9 @@
   --sidebar-accent-foreground: oklch(0.12 0 0);
   --sidebar-border: oklch(0.18 0 0);
   --sidebar-ring:  #487648;
+
+
+  
 }
 
 @theme inline {
@@ -138,5 +153,18 @@
 
   .font-dm-sans {
     font-family: var(--font-dm-sans);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
   }
 }
