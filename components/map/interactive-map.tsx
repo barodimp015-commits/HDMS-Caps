@@ -63,6 +63,18 @@ export function InteractiveMap({ specimens, onSpecimenSelect, selectedSpecimen }
       }
     }
   }, [])
+  useEffect(() => {
+  if (!mapInstanceRef.current || !selectedSpecimen) return
+
+  markersRef.current.forEach((marker: any) => {
+    const specimenId = marker.options?.specimenId
+    if (specimenId === selectedSpecimen) {
+      marker.openPopup()
+    } else {
+      marker.closePopup()
+    }
+  })
+}, [selectedSpecimen])
 
   // Render markers whenever specimens / selected changes
   useEffect(() => {
@@ -86,6 +98,17 @@ export function InteractiveMap({ specimens, onSpecimenSelect, selectedSpecimen }
           default: return "#6b7280"
         }
       }
+            const defaultMarkerIcon = new L.Icon({
+        iconRetinaUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+        iconUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+      })
+      
 
       // Marker icon
       const createCustomIcon = (status: string, isSelected: boolean) => {
@@ -109,6 +132,14 @@ export function InteractiveMap({ specimens, onSpecimenSelect, selectedSpecimen }
           iconAnchor: [size / 2, size / 2],
         })
       }
+      
+      const createPopupContent = (s: Specimen) => `
+        <div style="text-align:center;min-width:160px">
+          <img src="${s.imageUrl || "/placeholder.svg"}"
+            style="width:100%;height:100px;object-fit:cover;border-radius:6px" />
+          <p style="margin-top:6px;font-weight:600">${s.commonName}</p>
+        </div>
+      `
 
       // Add each specimen marker
       specimens.forEach((specimen) => {
@@ -120,8 +151,17 @@ export function InteractiveMap({ specimens, onSpecimenSelect, selectedSpecimen }
         const marker = L.marker([lat, lng], {
           icon: createCustomIcon(specimen.conservationStatus, selectedSpecimen === specimen.id),
         })
+        
+       marker.bindPopup(createPopupContent(specimen), {
+        closeButton: true,
+        autoClose: true,
+      })
 
-        marker.on("click", () => onSpecimenSelect(specimen.id))
+
+        marker.on("click", () => {
+        onSpecimenSelect(specimen.id)
+        marker.openPopup()
+      })
 
         marker.addTo(mapInstanceRef.current)
         markersRef.current.push(marker)
@@ -135,7 +175,7 @@ export function InteractiveMap({ specimens, onSpecimenSelect, selectedSpecimen }
     }
 
     updateMarkers()
-  }, [specimens, selectedSpecimen, onSpecimenSelect])
+  }, [specimens, onSpecimenSelect])
 
   return (
     <div
@@ -145,3 +185,4 @@ export function InteractiveMap({ specimens, onSpecimenSelect, selectedSpecimen }
     />
   )
 }
+
