@@ -1,4 +1,4 @@
-import UsersClient from "@/components/users-client"
+import UsersClient from "@/components/usersClient"
 import { getAllUsers } from "@/lib/admin-firebase/users"
 import type { Userdata } from "@/model/user"
 

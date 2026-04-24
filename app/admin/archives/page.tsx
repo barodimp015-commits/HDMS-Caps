@@ -11,7 +11,7 @@ import type { Specimen } from "@/model/Specimen"
 import { collection, getDocs, orderBy, query } from "firebase/firestore"
 import { db } from "@/config/firebase"
 import { DeleteConfirmationModal } from "@/components/DeleteConfirmationModal"
-import { DeleteSpecimen } from "@/lib/firebase-herbarium"
+import { DeleteSpecimen } from "@/lib/firebaseHerbarium"
 import { useRouter } from "next/navigation"
 
 export default function ArchivePage() {

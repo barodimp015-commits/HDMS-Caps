@@ -1,7 +1,7 @@
 import type React from "react"
 
-import { RoleBasedRedirect } from "@/components/Auth/role-based-redirect"
-import { Navbar } from "@/components/researcher-navbar"
+import { RoleBasedRedirect } from "@/components/Auth/rolebasedRedirect"
+import { Navbar } from "@/components/researcherNavbar"
 
 export default function ResearcherLayout({
   children,

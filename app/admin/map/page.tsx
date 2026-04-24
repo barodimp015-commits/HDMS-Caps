@@ -1,5 +1,5 @@
-import MapPageClient from "@/components/map/admin-map"
-import { GetAllSpecimenMap } from "@/lib/firebase-herbarium"
+import MapPageClient from "@/components/map/adminMap"
+import { GetAllSpecimenMap } from "@/lib/firebaseHerbarium"
 
 export default async function AdminMapPage() {
     const specimens = await GetAllSpecimenMap()

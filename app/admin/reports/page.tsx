@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from "@/components/Auth/auth-provider"
-import { getDashboardStats } from "@/lib/admin-firebase/dashboard-stat"
+import { useAuth } from "@/components/Auth/authProvider"
+import { getDashboardStats } from "@/lib/admin-firebase/dashboardStat"
 import { GetAllSpecimen } from "@/lib/firebase-herbarium/reports"
 
 import {

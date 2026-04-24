@@ -3,10 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Users, Database, FileCheck, Settings, BarChart3, Plus } from "lucide-react"
-import { getDashboardStats, getRecentActivities, getSystemStatus,formatActivity } from "@/lib/admin-firebase/dashboard-stat"
+import { getDashboardStats, getRecentActivities, getSystemStatus,formatActivity } from "@/lib/admin-firebase/dashboardStat"
 
 // Import the StatCard from client component
-import StatCard from "@/components/dashboard/stat-card"
+import StatCard from "@/components/dashboard/statCard"
 
 export default async function DashboardPage() {
   // 🔥 This runs ONLY on the server (SSR data fetching)
