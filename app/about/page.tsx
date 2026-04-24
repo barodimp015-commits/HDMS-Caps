@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "@/lib/auth-server"
+import { getAuthenticatedUser } from "@/lib/authServer"
 import { AdminLayout } from "@/components/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Leaf, Users, Target, Award, Mail, MapPin, Phone } from "lucide-react"
