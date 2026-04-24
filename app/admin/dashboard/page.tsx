@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="h-2 bg-secondary rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
+                      className="h-full bg-linear-to-r from-green-500 to-emerald-500"
                       style={{ width: system.databaseLoad + "%" }}
                     />
                   </div>
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="h-2 bg-secondary rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-blue-500 to-cyan-500"
+                      className="h-full bg-linear-to-r from-blue-500 to-cyan-500"
                       style={{ width: system.databaseLoad + "%" }}
                     />
                   </div>
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="h-2 bg-secondary rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-orange-500 to-amber-500"
+                      className="h-full bg-linear-to-r from-orange-500 to-amber-500"
                       style={{ width: system.storageUsed + "%" }}
                     />
                   </div>

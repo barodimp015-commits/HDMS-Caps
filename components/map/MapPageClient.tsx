@@ -238,7 +238,7 @@ export default function MapPageClient({ specimens }: Props) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="h-[600px] rounded-b-lg overflow-hidden">
+                <div className="h-150 rounded-b-lg overflow-hidden">
                   <InteractiveMap
                     specimens={filteredSpecimens}
                     onSpecimenSelect={handleSpecimenSelect}

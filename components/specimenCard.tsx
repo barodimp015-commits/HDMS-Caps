@@ -89,7 +89,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
         <CardContent className="p-6">
           <div className="flex gap-6">
             {/* Image */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden">
                 <Image
                   src={specimen.imageUrl || "/placeholder.svg"}
@@ -184,7 +184,7 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
   return (
     <Card className="bg-card border-border hover:shadow-md transition-shadow group">
       <CardHeader className="p-0">
-        <div className="relative aspect-[4/3] bg-muted rounded-t-lg overflow-hidden">
+        <div className="relative aspect-4/3 bg-muted rounded-t-lg overflow-hidden">
           <Image
             src={specimen.imageUrl || "/placeholder.svg"}
             alt={specimen.commonName}
@@ -219,17 +219,17 @@ export function SpecimenCard({ specimen, viewMode, userRole }: SpecimenCardProps
 
           <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
-              <MapPin className="h-4 w-4 flex-shrink-0" />
+              <MapPin className="h-4 w-4 shrink-0" />
               <span className="line-clamp-1">
                 {specimen.location.city}, {specimen.location.state}
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4 flex-shrink-0" />
+              <Calendar className="h-4 w-4 shrink-0" />
               <span>{new Date(specimen.collectionDate).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-1">
-              <User className="h-4 w-4 flex-shrink-0" />
+              <User className="h-4 w-4 shrink-0" />
               <span className="line-clamp-1">{specimen.collector}</span>
             </div>
           </div>

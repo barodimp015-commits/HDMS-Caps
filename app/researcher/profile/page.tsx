@@ -225,7 +225,7 @@ useEffect(() => {
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center space-y-4">
                   <div className="relative">
-                    <Avatar className="h-[300px] w-[300px] border-4 border-secondary">
+                    <Avatar className="h-75 w-75 border-4 border-secondary">
                       <AvatarImage 
                         src={researcher.profilePhoto || "/placeholder.svg"} 
                         alt="Profile" 

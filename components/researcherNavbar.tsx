@@ -45,7 +45,7 @@ import { db, doc, getDoc } from "@/config/firebase"
 
   return (
     <>
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="max-w-7x2 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">

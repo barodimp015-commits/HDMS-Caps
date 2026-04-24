@@ -54,7 +54,7 @@ export default function LandingPageClient() {
       </header>
 
       {/* Hero Section */}
- <section className="relative py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+ <section className="relative py-20 px-4 bg-linear-to-br from-primary/5 via-background to-secondary/5">
   <div className="absolute inset-0 opacity-10"></div>
 
   <div className="relative container mx-auto max-w-6xl flex flex-col md:flex-row items-center gap-10">

@@ -268,7 +268,7 @@ export default function AdminUsersClient({
               Add User
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-125">
             <DialogHeader>
               <DialogTitle>Add New User</DialogTitle>
               <DialogDescription>Create a new user account. All fields are required.</DialogDescription>
@@ -410,7 +410,7 @@ export default function AdminUsersClient({
               />
             </div>
             <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full md:w-45">
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
               <SelectContent>
@@ -420,7 +420,7 @@ export default function AdminUsersClient({
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full md:w-45">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -522,7 +522,7 @@ export default function AdminUsersClient({
                         setCurrentPage(1)
                       }}
                     >
-                      <SelectTrigger className="w-[100px]">
+                      <SelectTrigger className="w-25">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -600,7 +600,7 @@ export default function AdminUsersClient({
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-125">
           <DialogHeader>
             <DialogTitle>Edit User</DialogTitle>
             <DialogDescription>Update user information. Password is not required for editing.</DialogDescription>

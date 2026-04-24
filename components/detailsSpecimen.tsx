@@ -219,7 +219,7 @@ export default function SpecimenDetailsPage({
 
       return (
         <CarouselItem key={index}>
-          <div className="relative aspect-[4/3] bg-muted rounded-lg overflow-hidden">
+          <div className="relative aspect-4/3 bg-muted rounded-lg overflow-hidden">
             {/* Image */}
             <Image
               src={src as string}
