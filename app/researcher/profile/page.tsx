@@ -11,14 +11,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Camera, Mail, Award, BookOpen, Leaf, Users, Loader2 } from 'lucide-react'
-import { useAuth } from "@/components/Auth/auth-provider"
+import { useAuth } from "@/components/Auth/authProvider"
 import { db, doc } from "@/config/firebase"
-import { getUserProfile, updateUserProfile } from '@/lib/firebase-user'
+import { getUserProfile, updateUserProfile } from '@/lib/firebaseUser'
 import router from 'next/router'
 import { ResearcherData } from '@/model/user'
 import Link from 'next/link'
 import { Specimen } from "@/model/Specimen"
-import {  GetUserSpecimens } from "@/lib/firebase-herbarium"
+import {  GetUserSpecimens } from "@/lib/firebaseHerbarium"
 import Loading from '@/app/loading'
 
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { InteractiveMap } from "@/components/map/interactive-map"
+import { InteractiveMap } from "@/components/map/interactiveMap"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"

@@ -10,7 +10,7 @@ import {
   Info, LogOut, Menu, X, Users, Settings
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "./Auth/auth-provider"
+import { useAuth } from "./Auth/authProvider"
 import { db } from "@/config/firebase"
 import { doc, getDoc } from "firebase/firestore"
 

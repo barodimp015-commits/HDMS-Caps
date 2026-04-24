@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Database, MapPin, BookOpen, Search, Leaf, Users, Globe } from "lucide-react"
 import Link from "next/link"
-import { useAuth } from "./Auth/auth-provider"
+import { useAuth } from "./Auth/authProvider"
 import Image from "next/image"
 
 export default function VisitorHomePage() {

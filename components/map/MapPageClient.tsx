@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { InteractiveMap } from "@/components/map/interactive-map"
+import { InteractiveMap } from "@/components/map/interactiveMap"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, Filter, Layers, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { Specimen } from "@/model/Specimen"
-import { useAuth } from "../Auth/auth-provider"
+import { useAuth } from "../Auth/authProvider"
 
 interface Props {
   specimens: Specimen[]

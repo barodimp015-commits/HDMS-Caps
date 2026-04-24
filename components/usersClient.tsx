@@ -35,7 +35,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Plus, Search, MoreHorizontal, UserCheck, Mail, Pencil, Trash2, Eye, EyeOff } from "lucide-react"
-import { useAuth } from "@/components/Auth/auth-provider"
+import { useAuth } from "@/components/Auth/authProvider"
 import { deleteUser, updateUser } from "@/lib/admin-firebase/users"
 import type { Userdata } from "@/model/user"
 import { toast } from "sonner"

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { useAuth } from "@/components/Auth/auth-provider"
-import { GetAllSpecimen, GetHerbariumContributions, GetSummaryContributions } from "@/lib/firebase-herbarium"
+import { useAuth } from "@/components/Auth/authProvider"
+import { GetAllSpecimen, GetHerbariumContributions, GetSummaryContributions } from "@/lib/firebaseHerbarium"
 import { Specimen } from "@/model/Specimen"
 import { ViewMode, SortField, SortOrder } from "@/model/Specimen"
 import { HeaderSection } from "@/components/specimens-cards/HeaderSection"

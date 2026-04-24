@@ -17,9 +17,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
-import { useAuth } from "@/components/Auth/auth-provider"
+import { useAuth } from "@/components/Auth/authProvider"
 import { Specimen } from "@/model/Specimen"
-import { archiveSpecimen, GetSpecimen } from "@/lib/firebase-herbarium"
+import { archiveSpecimen, GetSpecimen } from "@/lib/firebaseHerbarium"
 import Loading from "@/app/loading"
 import { toast } from "sonner"
 

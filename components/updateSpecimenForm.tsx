@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { ArrowLeft, ImageIcon } from "lucide-react"
-import { InteractiveMap } from "@/components/map/picking-map"
+import { InteractiveMap } from "@/components/map/pickingMap"
 import { reverseGeocode } from "@/lib/geocode"
 import { useRouter, useParams } from "next/navigation"
-import { createImagePreview, uploadLocalImage } from "@/lib/image-upload"
-import { GetSpecimen,  UpdateSpecimen } from "@/lib/firebase-herbarium"
-import { useAuth } from "@/components/Auth/auth-provider"
+import { createImagePreview, uploadLocalImage } from "@/lib/imageUpload"
+import { GetSpecimen,  UpdateSpecimen } from "@/lib/firebaseHerbarium"
+import { useAuth } from "@/components/Auth/authProvider"
 import Loading from "@/app/loading"
 
 

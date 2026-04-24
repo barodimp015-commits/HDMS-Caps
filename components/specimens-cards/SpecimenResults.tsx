@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Search } from "lucide-react"
-import { SpecimenCard } from "@/components/specimen-card"
+import { SpecimenCard } from "@/components/specimenCard"
 import { Specimen } from "@/model/Specimen"
 import { ViewMode } from "@/model/Specimen"
 

@@ -9,7 +9,7 @@ import { Search, Menu, X, Leaf, Database, MapPin, BookOpen, Info, LogIn, User, C
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import Image from "next/image"
 // Import AuthProvider hook
-import { useAuth } from "@/components/Auth/auth-provider"
+import { useAuth } from "@/components/Auth/authProvider"
 import { db, doc, getDoc } from "@/config/firebase"
 
   export function Navbar() {

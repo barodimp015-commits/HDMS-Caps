@@ -15,9 +15,9 @@ import {
   Database
 } from "lucide-react"
 
-import { LoginForm } from "@/components/Auth/login-form"
-import { RegisterForm } from "@/components/Auth/register-form"
-import { ForgotPasswordForm } from "@/components/Auth/forgot-password" // adjust path if different
+import { LoginForm } from "@/components/Auth/loginForm"
+import { RegisterForm } from "@/components/Auth/registerForm"
+import { ForgotPasswordForm } from "@/components/Auth/forgotPassword" // adjust path if different
 
 // Dialog components (used for Forgot Password modal)
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"

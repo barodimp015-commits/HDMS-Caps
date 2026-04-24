@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useAuth } from "@/components/Auth/auth-provider"
+import { useAuth } from "@/components/Auth/authProvider"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 

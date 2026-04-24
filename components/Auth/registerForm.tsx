@@ -12,7 +12,7 @@ import Link from "next/link"
 import { toast } from "sonner"
 
 // Import AuthProvider hook
-import { useAuth } from "@/components/Auth/auth-provider"
+import { useAuth } from "@/components/Auth/authProvider"
 import { addNewActivity } from "@/lib/admin-firebase/activities"
 
 interface RegisterModalProps {

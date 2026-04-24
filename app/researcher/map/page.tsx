@@ -1,6 +1,6 @@
 // app/map/page.tsx (SERVER COMPONENT)
 import MapPageClient from "@/components/map/MapPageClient"
-import { GetAllSpecimenMap } from "@/lib/firebase-herbarium"
+import { GetAllSpecimenMap } from "@/lib/firebaseHerbarium"
 
 export default async function MapPage() {
   // Fetch SERVER-SIDE

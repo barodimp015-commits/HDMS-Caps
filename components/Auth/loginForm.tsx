@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Leaf, Eye, EyeOff } from "lucide-react"
 import { Checkbox } from "../ui/checkbox"
-import { useAuth } from "@/components/Auth/auth-provider"
+import { useAuth } from "@/components/Auth/authProvider"
 
 interface LoginModalProps {
   open: boolean

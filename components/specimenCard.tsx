@@ -8,7 +8,7 @@ import { MapPin, Calendar, User, Edit, Trash2, Eye, Bookmark } from "lucide-reac
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { DeleteSpecimen } from "@/lib/firebase-herbarium"
+import { DeleteSpecimen } from "@/lib/firebaseHerbarium"
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal"
 
 interface SpecimenCardProps {
