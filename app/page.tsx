@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
-import { getAuthenticatedUser } from "@/lib/auth-server"
-import LandingPageClient from "@/components/landing-page-client"
+import { getAuthenticatedUser } from "@/lib/authServer"
+import LandingPageClient from "@/components/landingPageClient"
 
 export default async function LandingPage() {
   const user = await getAuthenticatedUser()
